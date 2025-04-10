@@ -4,7 +4,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 
-class Datasource
+class DatasourceController
 {
     public Grav $grav;
     public string $configApi;

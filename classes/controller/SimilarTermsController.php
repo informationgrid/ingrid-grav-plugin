@@ -6,7 +6,7 @@ use Grav\Common\Cache;
 use Grav\Common\Grav;
 use PHPUnit\Framework\Exception;
 
-class SimilarTerms
+class SimilarTermsController
 {
     public Grav $grav;
     public string $configApi;

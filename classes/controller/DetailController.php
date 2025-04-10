@@ -5,7 +5,7 @@ namespace Grav\Plugin;
 use Grav\Common\Grav;
 use GuzzleHttp\Client;
 
-class Detail
+class DetailController
 {
     public Grav $grav;
     public string $configApi;

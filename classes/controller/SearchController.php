@@ -6,7 +6,7 @@ use Grav\Common\Grav;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Exception;
 
-class Search
+class SearchController
 {
 
     public Grav $grav;

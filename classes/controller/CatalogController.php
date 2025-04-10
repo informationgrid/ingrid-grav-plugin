@@ -5,7 +5,7 @@ namespace Grav\Plugin;
 use Grav\Common\Grav;
 use PHPUnit\Framework\Exception;
 
-class Catalog
+class CatalogController
 {
     public Grav $grav;
     public string $configApi;

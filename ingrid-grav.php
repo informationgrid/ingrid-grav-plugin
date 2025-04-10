@@ -253,14 +253,14 @@ class InGridGravPlugin extends Plugin
                 case 'measure':
                 case 'map':
                 if (!$this->isAdmin()) {
-                    $layoutZDM = new LayoutZDM($this->grav);
+                    $layoutZDM = new LayoutZDMController($this->grav);
                     $this->grav['twig']->twig_vars['headerContent'] = $layoutZDM->getContentHeader($page->folder());
                 }
                 break;
 
                 case 'detail':
                     if (!$this->isAdmin()) {
-                        $detail = new Detail($this->grav, $this->configApiUrl);
+                        $detail = new DetailController($this->grav, $this->configApiUrl);
                         $detail->getContent();
                         $twig = $this->grav['twig'];
                         if (isset($detail->hit)) {
@@ -269,7 +269,7 @@ class InGridGravPlugin extends Plugin
                         } else {
                             $twig->twig_vars['hit'] = [];
                         }
-                        $layoutZDM = new LayoutZDM($this->grav);
+                        $layoutZDM = new LayoutZDMController($this->grav);
                         $this->grav['twig']->twig_vars['headerContent'] = $layoutZDM->getContentHeader($page->folder(), $detail->title ?? null);
                         $this->grav['twig']->twig_vars['footerContent'] = $layoutZDM->getContentFooter($page->folder());
                     }
@@ -389,7 +389,7 @@ class InGridGravPlugin extends Plugin
     public function onTwigSiteVariablesHelp(): void
     {
         if (!$this->isAdmin()) {
-            $help = new Help($this->grav);
+            $help = new HelpController($this->grav);
             $help->getContent();
             $this->grav['twig']->twig_vars['help_content'] = str_replace('<?xml version="1.0"?>', '', $help->helpContent ?: '');
             $this->grav['twig']->twig_vars['help_menu'] = str_replace('<?xml version="1.0"?>', '', $help->helpMenu ?: '');
@@ -403,7 +403,7 @@ class InGridGravPlugin extends Plugin
     public function onTwigSiteVariablesDatasource(): void
     {
         if (!$this->isAdmin()) {
-            $datasource = new Datasource($this->grav, $this->configApiUrlCatalog);
+            $datasource = new DatasourceController($this->grav, $this->configApiUrlCatalog);
             $this->grav['twig']->twig_vars['plugs'] = $datasource->getContent();
         }
     }
@@ -413,7 +413,7 @@ class InGridGravPlugin extends Plugin
         if ($this->isAdmin()) {
             $twig = $this->grav['twig'];
             try {
-                $datasource = new Datasource($this->grav, $this->configApiUrlCatalog);
+                $datasource = new DatasourceController($this->grav, $this->configApiUrlCatalog);
                 $twig->twig_vars['datasources'] = $datasource->getAdminContent();
 
             } catch (\Exception $e) {
@@ -473,7 +473,7 @@ class InGridGravPlugin extends Plugin
     {
 
         if (!$this->isAdmin()) {
-            $catalog = new Catalog($this->grav, $this->configApiUrlCatalog);
+            $catalog = new CatalogController($this->grav, $this->configApiUrlCatalog);
             $items = $catalog->getContent();
             $this->grav['twig']->twig_vars['partners'] = $items;
             $this->grav['twig']->twig_vars['api_url'] = $catalog->configApi;
@@ -487,7 +487,7 @@ class InGridGravPlugin extends Plugin
     public function renderCustomTemplateCatalog(): void
     {
         try {
-            $catalog = new Catalog($this->grav, $this->configApiUrlCatalog);
+            $catalog = new CatalogController($this->grav, $this->configApiUrlCatalog);
             echo $catalog->getContentLeaf();
         } catch (\Exception $e) {
             $this->grav['log']->error($e->getMessage());
@@ -502,7 +502,7 @@ class InGridGravPlugin extends Plugin
     public function renderCustomTemplateDetailCreateZip(): void
     {
         try {
-            $detail = new Detail($this->grav, $this->configApiUrl);
+            $detail = new DetailController($this->grav, $this->configApiUrl);
             echo $detail->getContentZipOutput();
         } catch (\Exception $e) {
             $this->grav['log']->error($e->getMessage());
@@ -546,7 +546,7 @@ class InGridGravPlugin extends Plugin
     {
 
         if (!$this->isAdmin()) {
-            $detail = new Detail($this->grav, $this->configApiUrl);
+            $detail = new DetailController($this->grav, $this->configApiUrl);
             $detail->getContent();
             $twig = $this->grav['twig'];
             if (isset($detail->hit)) {
@@ -581,12 +581,12 @@ class InGridGravPlugin extends Plugin
             switch ($action) {
                 case 'doAddSimilar':
                     $this->configApiUrl = $config['sns']['similar_terms']['url'];
-                    $similarTerms = new SimilarTerms($this->grav, $this->configApiUrl);
+                    $similarTerms = new SimilarTermsController($this->grav, $this->configApiUrl);
                     $url = $similarTerms->updateQueryString($uri->post());
                     $this->grav->redirect($uri->route() . $url);
                     break;
                 default:
-                    $search = new Search($this->grav, $this->configApiUrl);
+                    $search = new SearchController($this->grav, $this->configApiUrl);
                     $search->getContent();
                     $twig = $this->grav['twig'];
                     $twig->twig_vars['query'] = $search->query;
@@ -598,7 +598,7 @@ class InGridGravPlugin extends Plugin
                     $twig->twig_vars['csw_url'] = $this->config()['csw']['url'];
                     $twig->twig_vars['rdf_url'] = $this->config()['rdf']['url'];
                     $twig->twig_vars['display_sort_hits'] = $search->isSortHitsEnable();
-                    $similar = new SimilarTerms($this->grav, $config['sns']['similar_terms']['url']);
+                    $similar = new SimilarTermsController($this->grav, $config['sns']['similar_terms']['url']);
                     $twig->twig_vars['similar_terms'] = $similar->getContent();
                     break;
             }
@@ -610,10 +610,10 @@ class InGridGravPlugin extends Plugin
         if (!$this->isAdmin()) {
             $twig = $this->grav['twig'];
 
-            $categories = new CategoryFacet($this->grav);
+            $categories = new CategoryController($this->grav);
             $twig->twig_vars['categories_result'] = $categories->getContent();
 
-            $hitsOverview = new HitOverview($this->grav);
+            $hitsOverview = new HitOverviewController($this->grav);
             $twig->twig_vars['hits_result'] = $hitsOverview->getContent();
 
             $rss = new RssController($this->grav);
@@ -625,7 +625,7 @@ class InGridGravPlugin extends Plugin
     {
 
         if (!$this->isAdmin()) {
-            $provider = new Provider($this->grav);
+            $provider = new ProviderController($this->grav);
             $this->grav['twig']->twig_vars['partners'] = $provider->getContent();
         }
     }
@@ -641,7 +641,7 @@ class InGridGravPlugin extends Plugin
     public function onTwigSiteVariablesMapLegend(): void
     {
         if (!$this->isAdmin()) {
-            $search = new Search($this->grav, $this->configApiUrl);
+            $search = new SearchController($this->grav, $this->configApiUrl);
             $search->getContentMapLegend();
             if ($search->results) {
                 $this->grav['twig']->twig_vars['legend'] = json_encode($search->results->facets);
@@ -658,7 +658,7 @@ class InGridGravPlugin extends Plugin
     {
         if (!$this->isAdmin()) {
             try {
-                $search = new Search($this->grav, $this->configApiUrl);
+                $search = new SearchController($this->grav, $this->configApiUrl);
                 $output = $search->getContentMapMarkers();
                 echo json_encode($output);
             } catch (\Exception $e) {

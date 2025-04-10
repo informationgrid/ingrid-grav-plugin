@@ -4,7 +4,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 
-class CategoryFacet
+class CategoryController
 {
     public Grav $grav;
 

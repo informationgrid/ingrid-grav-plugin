@@ -4,7 +4,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 
-class Provider
+class ProviderController
 {
     public Grav $grav;
     public string $theme;

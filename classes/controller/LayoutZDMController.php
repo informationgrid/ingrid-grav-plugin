@@ -5,7 +5,7 @@ namespace Grav\Plugin;
 use Grav\Common\Cache;
 use Grav\Common\Grav;
 
-class LayoutZDM
+class LayoutZDMController
 {
     public Grav $grav;
     public string $headerUrl;

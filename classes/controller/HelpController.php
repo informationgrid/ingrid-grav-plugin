@@ -4,7 +4,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 
-class Help
+class HelpController
 {
     public Grav $grav;
     public string $lang;

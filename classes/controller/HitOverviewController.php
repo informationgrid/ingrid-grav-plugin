@@ -4,7 +4,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 
-class HitOverview
+class HitOverviewController
 {
     public Grav $grav;
 
