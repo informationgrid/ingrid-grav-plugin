@@ -20,6 +20,7 @@ readonly class FacetResult
         public ?bool $open,
         public ?array $openBy,
         public ?array $displayDependOn,
+        public ?bool $selectionSingle,
     )
     {
     }

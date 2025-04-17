@@ -31,7 +31,10 @@ class SearchResponseTransformerClassic
                     if (isset($key)) {
                         $label = $query['label'] ?? strtoupper('FACETS.' . $facetConfig['id'] . '.' . $key);
                         if (isset($facetConfig['codelist']) or isset($query['codelist'])) {
-                            $label = CodelistHelper::getCodelistEntryByIdent([$query['codelist'] ?? $facetConfig['codelist']], $key, $lang);
+                            $label = CodelistHelper::getCodelistEntryByIdent(
+                                $query['codelist'] ?? $facetConfig['codelist'],
+                                    $query['codelist_entry_id'] ?? $facetConfig['codelist_entry_id'] ?? $key,
+                                $lang);
                         }
                         if (isset($query['query'])) {
                             $items[] = new FacetItem(
@@ -116,7 +119,19 @@ class SearchResponseTransformerClassic
                     break;
             }
             $displayDependOn = $facetConfig['display_depend_on'] ?? null;
-            $result[] = new FacetResult($facetConfig['id'], $label, $items, $listLimit, $info, $toggle, $open, $openBy, $displayDependOn);
+            $selectionSingle = $facetConfig['selection_single'] ?? null;
+            $result[] = new FacetResult(
+                $facetConfig['id'],
+                $label,
+                $items,
+                $listLimit,
+                $info,
+                $toggle,
+                $open,
+                $openBy,
+                $displayDependOn,
+                $selectionSingle
+            );
         }
 
         return $result;
@@ -135,20 +150,30 @@ class SearchResponseTransformerClassic
             if ($facetConfigId == 'bbox') {
                 unset($query_params[$facetConfigId]);
             } else {
-                $valueAsArray = [];
-                if (!empty($query_params[$facetConfigId])) {
-                    $valueAsArray = explode(",", $query_params[$facetConfigId]);
+                $filteredObjects = ElasticsearchService::findByFacetId($facetConfig, $facetConfigId);
+                $foundObject = reset($filteredObjects);
+                $isSelectionSingle = false;
+                if ($foundObject) {
+                    $isSelectionSingle = $foundObject['selection_single'] ?? false;
                 }
-                $found = array_search($key, $valueAsArray);
-                if ($found !== false) {
-                    array_splice($valueAsArray, $found, 1);
+                if ($isSelectionSingle) {
+                    $query_params[$facetConfigId] = $key;
                 } else {
-                    $valueAsArray[] = $key;
-                }
-                if (count($valueAsArray) > 0) {
-                    $query_params[$facetConfigId] = implode(",", $valueAsArray);
-                } else {
-                    unset($query_params[$facetConfigId]);
+                    $valueAsArray = [];
+                    if (!empty($query_params[$facetConfigId])) {
+                        $valueAsArray = explode(",", $query_params[$facetConfigId]);
+                    }
+                    $found = array_search($key, $valueAsArray);
+                    if ($found !== false) {
+                        array_splice($valueAsArray, $found, 1);
+                    } else {
+                        $valueAsArray[] = $key;
+                    }
+                    if (count($valueAsArray) > 0) {
+                        $query_params[$facetConfigId] = implode(",", $valueAsArray);
+                    } else {
+                        unset($query_params[$facetConfigId]);
+                    }
                 }
             }
         } else {
