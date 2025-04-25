@@ -56,27 +56,6 @@ form:
               label: PLUGIN_INGRID_GRAV.INGRID_API.PASS
               help: PLUGIN_INGRID_GRAV.INGRID_API.PASS_HELP
 
-        tab_geo_api:
-          type: tab
-          title: PLUGIN_INGRID_GRAV.GEO_API.TITLE
-          fields:
-            geo_api:
-              type: section
-              title: PLUGIN_INGRID_GRAV.GEO_API.TITLE
-              underline: true
-            geo_api.url:
-              type: text
-              label: PLUGIN_INGRID_GRAV.GEO_API.URL
-              help: PLUGIN_INGRID_GRAV.GEO_API.URL_HELP
-            geo_api.user:
-              type: text
-              label: PLUGIN_INGRID_GRAV.GEO_API.USER
-              help: PLUGIN_INGRID_GRAV.GEO_API.USER_HELP
-            geo_api.pass:
-              type: text
-              label: PLUGIN_INGRID_GRAV.GEO_API.PASS
-              help: PLUGIN_INGRID_GRAV.GEO_API.PASS_HELP
-
         tab_csw:
           type: tab
           title: PLUGIN_INGRID_GRAV.CSW.TITLE
