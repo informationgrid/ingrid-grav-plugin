@@ -3,10 +3,6 @@ ingrid_api:
   url: 'https://api.dev.informationgrid.eu'
   user:
   pass:
-geo_api:
-  url: 'https://geo-api.informationgrid.eu/v1/convert?exportFormat='
-  user:
-  pass:
 csw:
   url: 'https://dev.informationgrid.eu/csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id='
 rdf:
