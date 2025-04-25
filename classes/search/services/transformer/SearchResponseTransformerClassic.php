@@ -41,7 +41,7 @@ class SearchResponseTransformerClassic
                                 $key,
                                 $label,
                                 ((array)$aggregations)[$key]->doc_count,
-                                SearchResponseTransformerClassic::createActionUrl($uri, $facetConfig["id"], $key, $config),
+                                SearchResponseTransformerClassic::createActionUrl($uri, $query['parent'] ?? $facetConfig["id"], $key, $config),
                                 $query['icon'] ?? null,
                                 $query['display_on_empty'] ?? false,
                             );
