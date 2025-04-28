@@ -594,6 +594,7 @@ class InGridGravPlugin extends Plugin
                     $twig->twig_vars['search_result'] = $search->results;
                     $twig->twig_vars['hitsNum'] = $search->hitsNum;
                     $twig->twig_vars['pagingUrl'] = $search->getPagingUrl($this->grav['uri']);
+                    $twig->twig_vars['facetResetActionUrl'] = $search->getFacetResetActionUrl($this->grav['uri']);
                     $twig->twig_vars['search_ranking'] = $search->ranking;
                     $twig->twig_vars['csw_url'] = $this->config()['csw']['url'];
                     $twig->twig_vars['rdf_url'] = $this->config()['rdf']['url'];

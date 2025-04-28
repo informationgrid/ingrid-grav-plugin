@@ -189,6 +189,33 @@ class SearchController
         return $url;
     }
 
+    public function getFacetResetActionUrl(mixed $uri): string
+    {
+        $query_params = $uri->query(null, true);
+        $url = '';
+        $facetConfig = $this->grav['config']->get('themes.' . $this->theme . '.hit_search.facet_config') ?: [];
+        foreach ($facetConfig as $facet) {
+            $hasActive =  false;
+            if (isset($facet['facets'])) {
+                foreach ($facet['facets'] as $subFacet) {
+                    $hasActive = $subFacet['active'] ?? false;
+                    if ($hasActive) {
+                        break;
+                    }
+                }
+            }
+            if ($hasActive) {
+                $query_params[$facet['id']] = '';
+            } else {
+                unset($query_params[$facet['id']]);
+            }
+        }
+        $query_string[] = http_build_query($query_params);
+
+        $base_url = $uri->path();
+        return $base_url . '?' . join('&', $query_string);
+    }
+
     private function getSelectedFacetsFromConfig(array &$facets, array &$params, ?string $parentId): void
     {
         $values = [];

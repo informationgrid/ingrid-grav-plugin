@@ -2,7 +2,7 @@
 
 namespace Grav\Plugin;
 
-use Grav\Common\Plugin;
+use Grav\Common\Grav;
 
 class SearchResponseTransformerClassic
 {
@@ -41,7 +41,7 @@ class SearchResponseTransformerClassic
                                 $key,
                                 $label,
                                 ((array)$aggregations)[$key]->doc_count,
-                                SearchResponseTransformerClassic::createActionUrl($uri, $query['parent'] ?? $facetConfig["id"], $key, $config),
+                                SearchResponseTransformerClassic::createActionUrl($uri, $query['parent'] ?? $facetConfig["id"], $key, $config, $facetConfig["link_to_search"] ?? false),
                                 $query['icon'] ?? null,
                                 $query['display_on_empty'] ?? false,
                             );
@@ -137,12 +137,31 @@ class SearchResponseTransformerClassic
         return $result;
     }
 
-    private static function createActionUrl($uri, $facetConfigId, $key, array $facetConfig): string {
+    private static function createActionUrl($uri, $facetConfigId, $key, array $facetConfig, bool $linkToSearch = false): string {
         $query_params = $uri->query(null, true);
 
         // Get the full current URL without query parameters
         $base_url = $uri->path();
 //        $search_term = $uri->post("q") ? "" : '&q=' . $uri->query("q");
+
+        if ($linkToSearch) {
+            $config = Grav::instance()['config'];
+            $theme = $config->get('system.pages.theme');
+            $searchSettings = $config->get('themes.' . $theme . '.hit_search') ?? [];
+            $facetSearchConfig = $searchSettings['facet_config'] ?? [];
+            $searchFacets = array_filter($facetSearchConfig, function ($facet) {
+                $hasActive =  false;
+                if (isset($facet['facets'])) {
+                    foreach ($facet['facets'] as $subFacet) {
+                        $hasActive = $subFacet['active'] ?? false;
+                        if ($hasActive) {
+                            break;
+                        }
+                    }
+                }
+                return $hasActive;
+            });
+        }
 
         $query_string = array();
         if (isset($query_params[$facetConfigId])) {
@@ -157,7 +176,12 @@ class SearchResponseTransformerClassic
                     $isSelectionSingle = $foundObject['selection_single'] ?? false;
                 }
                 if ($isSelectionSingle) {
-                    $query_params[$facetConfigId] = $key;
+                    $found = array_search($key, explode(",", $query_params[$facetConfigId]));
+                    if ($found !== false) {
+                        unset($query_params[$facetConfigId]);
+                    } else {
+                        $query_params[$facetConfigId] = $key;
+                    }
                 } else {
                     $valueAsArray = [];
                     if (!empty($query_params[$facetConfigId])) {
@@ -172,12 +196,27 @@ class SearchResponseTransformerClassic
                     if (count($valueAsArray) > 0) {
                         $query_params[$facetConfigId] = implode(",", $valueAsArray);
                     } else {
-                        unset($query_params[$facetConfigId]);
+                        if (isset($foundObject['facets'])) {
+                            $activatableFacets = array_filter($foundObject['facets'], function ($facet) {
+                                return isset($facet['active']);
+                            });
+                            if (empty($activatableFacets)) {
+                                unset($query_params[$facetConfigId]);
+                            } else {
+                                $query_params[$facetConfigId] = '';
+                            }
+                        } else {
+                            unset($query_params[$facetConfigId]);
+                        }
                     }
                 }
             }
         } else {
-            $query_params[$facetConfigId] = $key;
+            if (isset($searchFacets)) {
+                foreach ($searchFacets as $searchFacet) {
+                    $query_params[$searchFacet['id']] = '';
+                }
+            }
             foreach ($facetConfig as $facet) {
                 if ($facet['id'] === $facetConfigId) {
                     if (isset($facet['select_other'])) {
@@ -197,16 +236,24 @@ class SearchResponseTransformerClassic
                         }
                     } else if (isset($facet['facets'])) {
                         foreach ($facet['facets'] as $subFacetKey => $subFacet) {
-                            if ($key === $subFacetKey) {
+                            $otherActiveFacets = [];
+                            foreach ($facet['facets'] as $subFacetKey => $subFacet) {
                                 if (isset($subFacet['active']) && $subFacet['active']) {
-                                    $query_params[$facetConfigId] = '';
+                                    if ($key !== $subFacetKey) {
+                                        $otherActiveFacets[] = $subFacetKey;
+                                    }
                                 }
-                                break;
+                            }
+                            if (!empty($otherActiveFacets)) {
+                                $query_params[$facetConfigId] = implode(',', $otherActiveFacets);
                             }
                         }
                     }
                     break;
                 }
+            }
+            if (!isset($query_params[$facetConfigId])) {
+                $query_params[$facetConfigId] = $key;
             }
         }
 
