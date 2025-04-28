@@ -192,7 +192,6 @@ class SearchController
     public function getFacetResetActionUrl(mixed $uri): string
     {
         $query_params = $uri->query(null, true);
-        $url = '';
         $facetConfig = $this->grav['config']->get('themes.' . $this->theme . '.hit_search.facet_config') ?: [];
         foreach ($facetConfig as $facet) {
             $hasActive =  false;
@@ -203,11 +202,19 @@ class SearchController
                         break;
                     }
                 }
+                if ($hasActive) {
+                    $query_params[$facet['id']] = '';
+                } else {
+                    unset($query_params[$facet['id']]);
+                }
             }
-            if ($hasActive) {
-                $query_params[$facet['id']] = '';
-            } else {
-                unset($query_params[$facet['id']]);
+            if (isset($facet['toggle'])) {
+                $hasActive = $facet['toggle']['active'] ?? false;
+                if ($hasActive) {
+                    $query_params[$facet['toggle']['id']] = '';
+                } else {
+                    unset($query_params[$facet['toggle']['id']]);
+                }
             }
         }
         $query_string[] = http_build_query($query_params);
