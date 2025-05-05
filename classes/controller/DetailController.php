@@ -45,7 +45,7 @@ class DetailController
                     $esHit = $hits[0];
                     if ($esHit) {
                         $response = ElasticsearchHelper::getValue($esHit, 'idf');
-                        $dataSourceName = ElasticsearchHelper::getValue($esHit, 'dataSourceName');
+                        $dataSourceName = ElasticsearchHelper::getValue($esHit, 't03_catalogue.cat_name');
                         $this->partners = ElasticsearchHelper::getValueArray($esHit, 'partner');
                         $tmpProviders = ElasticsearchHelper::getValueArray($esHit, 'provider');
                         $this->title = ElasticsearchHelper::getValue($esHit, 'title');
