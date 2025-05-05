@@ -195,25 +195,29 @@ class SearchController
         $facetConfig = $this->grav['config']->get('themes.' . $this->theme . '.hit_search.facet_config') ?: [];
         foreach ($facetConfig as $facet) {
             $hasActive =  false;
-            if (isset($facet['facets'])) {
-                foreach ($facet['facets'] as $subFacet) {
-                    $hasActive = $subFacet['active'] ?? false;
+            if ($facet['id'] === 'bbox') {
+                unset($query_params[$facet['id']]);
+            } else {
+                if (isset($facet['facets'])) {
+                    foreach ($facet['facets'] as $subFacet) {
+                        $hasActive = $subFacet['active'] ?? false;
+                        if ($hasActive) {
+                            break;
+                        }
+                    }
                     if ($hasActive) {
-                        break;
+                        $query_params[$facet['id']] = '';
+                    } else {
+                        unset($query_params[$facet['id']]);
                     }
                 }
-                if ($hasActive) {
-                    $query_params[$facet['id']] = '';
-                } else {
-                    unset($query_params[$facet['id']]);
-                }
-            }
-            if (isset($facet['toggle'])) {
-                $hasActive = $facet['toggle']['active'] ?? false;
-                if ($hasActive) {
-                    $query_params[$facet['toggle']['id']] = '';
-                } else {
-                    unset($query_params[$facet['toggle']['id']]);
+                if (isset($facet['toggle'])) {
+                    $hasActive = $facet['toggle']['active'] ?? false;
+                    if ($hasActive) {
+                        $query_params[$facet['toggle']['id']] = '';
+                    } else {
+                        unset($query_params[$facet['toggle']['id']]);
+                    }
                 }
             }
         }
