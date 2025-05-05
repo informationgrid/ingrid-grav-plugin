@@ -90,7 +90,7 @@ class SearchResultParserClassicISO
             "isInspire" => !($isInspire == "N"),
             "isOpendata" => !($isOpendata == "N"),
             "hasAccessConstraint" => !($hasAccessConstraint == "N"),
-            "isHVD" => !(ElasticsearchHelper::getValue($esHit, "is_hvd") === 'false'),
+            "isHVD" => ElasticsearchHelper::getValue($esHit, "is_hvd") ?? false,
             "obj_serv_type" => $obj_serv_type,
             "mapUrl" => $capUrl ? CapabilitiesHelper::getMapUrl($capUrl, $servTypeVersion, $servType) : null,
             "mapUrlClient" => ElasticsearchHelper::getFirstValue($esHit, "capabilities_url_with_client"),
