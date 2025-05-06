@@ -124,11 +124,11 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     foreach ($nodes as $node) {
                         $stepType = IdfHelper::getNodeValue($node , './@type');
                         $stepDate = IdfHelper::getNodeValue($node , './datePeriod/from | ./date/from');
-                        $docs = IdfHelper::getNodeList($node, './docs');
+                        $docs = IdfHelper::getNodeList($node, './docs[./*]');
                         if (count($docs) > 0) {
                             $stepFolder = date_format(date_create($stepDate), 'Ymd') . '_' . $this->grav['language']->translate('SEARCH_DETAIL.STEPS_UVP_' . strtoupper($stepType));
                             foreach ($docs as $doc) {
-                                $links = IdfHelper::getNodeList($doc, './doc');
+                                $links = IdfHelper::getNodeList($doc, './doc[./*]');
                                 if (count($links) > 0) {
                                     $docType = IdfHelper::getNodeValue($doc, './@type');
                                     $docFolder = '';

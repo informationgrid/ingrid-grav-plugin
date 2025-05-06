@@ -557,7 +557,7 @@ class InGridGravPlugin extends Plugin
                 } else {
                     $twig->twig_vars['page_custom_title'] = $detail->hit->title ?? null;
                 }
-                $twig->twig_vars['partners'] = $detail->partners;
+                $twig->twig_vars['partners'] = $detail->partners ?? [];
                 $twig->twig_vars['lang'] = $detail->lang;
                 $twig->twig_vars['paramsMore'] = explode(",", $this->grav['uri']->query('more'));
                 $twig->twig_vars['timezone'] = !empty($detail->timezone) ? $detail->timezone : 'Europe/Berlin';

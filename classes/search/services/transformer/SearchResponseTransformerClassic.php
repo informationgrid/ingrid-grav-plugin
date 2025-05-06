@@ -89,13 +89,6 @@ class SearchResponseTransformerClassic
                         );
                     }
                 }
-            } else if ($facetConfig['id'] == 'bbox') {
-                $items[] = new FacetItem(
-                    '',
-                    '',
-                    -1,
-                    SearchResponseTransformerClassic::createActionUrl($uri, 'bbox', null, $config)
-                );
             }
             $label = $facetConfig['label'] ?? 'FACETS.FACET_LABEL.' . strtoupper($facetConfig['id']);
             $listLimit = $facetConfig['list_limit'] ?? null;
@@ -167,6 +160,8 @@ class SearchResponseTransformerClassic
         if (isset($query_params[$facetConfigId])) {
 
             if ($facetConfigId == 'bbox') {
+                unset($query_params[$facetConfigId]);
+            } elseif ($facetConfigId == 'timeref') {
                 unset($query_params[$facetConfigId]);
             } else {
                 $filteredObjects = ElasticsearchService::findByFacetId($facetConfig, $facetConfigId);
