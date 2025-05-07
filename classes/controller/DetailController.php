@@ -45,12 +45,12 @@ class DetailController
                     $esHit = $hits[0];
                     if ($esHit) {
                         $response = ElasticsearchHelper::getValue($esHit, 'idf');
-                        $dataSourceName = ElasticsearchHelper::getValue($esHit, 't03_catalogue.cat_name');
+                        $dataSourceName = ElasticsearchHelper::getValue($esHit, 't03_catalogue.cat_name') ?? ElasticsearchHelper::getValue($esHit, 'dataSourceName');
                         $this->partners = ElasticsearchHelper::getValueArray($esHit, 'partner');
                         $tmpProviders = ElasticsearchHelper::getValueArray($esHit, 'provider');
                         $this->title = ElasticsearchHelper::getValue($esHit, 'title');
                         foreach ($tmpProviders as $provider) {
-                            $providers[] = CodelistHelper::getCodelistEntryByIdent(['111'], $provider, $this->lang);
+                            $providers[] = CodelistHelper::getCodelistEntryByIdent(['111'], $provider, $this->lang) ?? $provider;
                         }
                     }
                 }
