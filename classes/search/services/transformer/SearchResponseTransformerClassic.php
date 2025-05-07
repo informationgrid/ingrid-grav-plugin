@@ -206,6 +206,10 @@ class SearchResponseTransformerClassic
                     }
                 }
             }
+            $filteredObjects = ElasticsearchService::findDependedFacetById($facetConfig, $facetConfigId, $key);
+            foreach ($filteredObjects as $filteredObject){
+                unset($query_params[$filteredObject['id']]);
+            }
         } else {
             if (isset($searchFacets)) {
                 foreach ($searchFacets as $searchFacet) {

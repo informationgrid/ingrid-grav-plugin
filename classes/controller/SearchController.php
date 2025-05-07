@@ -197,6 +197,8 @@ class SearchController
             $hasActive =  false;
             if ($facet['id'] === 'bbox') {
                 unset($query_params[$facet['id']]);
+            } elseif ($facet['id'] === 'timeref') {
+                unset($query_params[$facet['id']]);
             } else {
                 if (isset($facet['facets'])) {
                     foreach ($facet['facets'] as $subFacet) {
