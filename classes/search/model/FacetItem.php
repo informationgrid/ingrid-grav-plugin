@@ -10,6 +10,7 @@ readonly class FacetItem
         public string $docCount,
         public string $actionLink,
         public ?string $icon = null,
+        public ?string $iconText = null,
         public ?bool $displayOnEmpty = false,
     )
     {

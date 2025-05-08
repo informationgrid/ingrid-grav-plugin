@@ -43,6 +43,7 @@ class SearchResponseTransformerClassic
                                 ((array)$aggregations)[$key]->doc_count,
                                 SearchResponseTransformerClassic::createActionUrl($uri, $query['parent'] ?? $facetConfig["id"], $key, $config, $facetConfig["link_to_search"] ?? false),
                                 $query['icon'] ?? null,
+                                $query['icon_text'] ?? null,
                                 $query['display_on_empty'] ?? false,
                             );
                         } else if (isset($query['facets'])) {
