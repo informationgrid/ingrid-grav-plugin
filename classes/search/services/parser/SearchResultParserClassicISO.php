@@ -99,6 +99,10 @@ class SearchResultParserClassicISO
             "x1" => ElasticsearchHelper::getValue($esHit, "x1"),
             "y2" => ElasticsearchHelper::getValue($esHit, "y2"),
             "x2" => ElasticsearchHelper::getValue($esHit, "x2"),
+            "bwastr_name" => ElasticsearchHelper::getValueArray($esHit, "bwstr-bwastr_name"),
+            "bawauftragsnummer" => ElasticsearchHelper::getValue($esHit, "bawauftragsnummer"),
+            "bawauftragstitel" => ElasticsearchHelper::getValue($esHit, "bawauftragstitel"),
+            "citation" => ElasticsearchHelper::getValue($esHit, "additional_html_citation_quote"),
         ];
     }
 

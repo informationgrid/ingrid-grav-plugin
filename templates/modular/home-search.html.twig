@@ -6,19 +6,23 @@
 {% endif %}
 <div class="{{ bannerClass }}">
     <a id="search"></a>
-    <div class="{{ wrapperClass }}" style="background-image: url('{{ url('theme://images/template/drops-big.svg') }}');">
+    {# div start in include #}
+    {% include 'partials/home/home_search_wrapper.html.twig' ignore missing %}
         <div class="row align-center">
             <div class="large-20 columns dark">
                 {% if page.header.has_content_title %}
-                    {% set title = "SEARCH.PORTLET_TITLE_1"|t %}
-                    {% if title %}
+                    {% set title = "SEARCH.PORTLET_TITLE_1"|t|trim %}
+                    {% if title is not empty %}
                         <h1>{{ title|raw }}</h1>
                     {% endif %}
                     {% include 'partials/home/home_search_title_sub.html.twig' ignore missing %}
-                    <div class="indent">
-                        <span class="ic-ic-asterisc"></span>
-                        <p class="intro">{{ "SEARCH.PORTLET_TITLE_3"|t|raw }}</p>
-                    </div>
+                    {% set title = "SEARCH.PORTLET_TITLE_3"|t|trim %}
+                    {% if title is not empty %}
+                        <div class="indent">
+                            <span class="ic-ic-asterisc"></span>
+                            <p class="intro">{{ "SEARCH.PORTLET_TITLE_3"|t|raw }}</p>
+                        </div>
+                    {% endif %}
                 {% endif %}
                 <form action="{{ page.find('/search').url }}?{{ uri.query }}" class="input-search" method="get" name="SearchForm" id="SearchForm">
                     <input type="text" class="input-search-field" placeholder="{{ "SEARCH.QUERY_INITIAL"|t }}" id="qrystr" name="q" value="{{ query }}">
