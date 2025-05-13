@@ -56,7 +56,11 @@ class DetailController
                 }
             }
         } else if ($this->cswUrl) {
-            $response = file_get_contents($this->cswUrl);
+            try {
+                $response = file_get_contents($this->cswUrl);
+            } catch (\Exception $e) {
+                $this->grav['log']->error('Error loading detail with cswUrl "' . $this->cswUrl . '": ' . $e->getMessage());
+            }
         }
 
         if ($response) {
@@ -64,11 +68,15 @@ class DetailController
             IdfHelper::registerNamespaces($content);
 
             if ($this->type == "address") {
-                $parser = new DetailAddress($this->theme);
-                $this->hit = $parser->parse($content, $this->uuid);
+                if ($this->uuid) {
+                    $parser = new DetailAddress($this->theme);
+                    $this->hit = $parser->parse($content, $this->uuid);
+                }
             } else {
-                $parser = new DetailMetadata($this->theme);
-                $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
+                if ($this->uuid) {
+                    $parser = new DetailMetadata($this->theme);
+                    $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
+                }
             }
         }
     }

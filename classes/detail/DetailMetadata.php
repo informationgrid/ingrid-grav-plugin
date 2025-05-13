@@ -27,10 +27,10 @@ class DetailMetadata
                 break;
             default:
                 $rootNode = IdfHelper::getNode($content, '//gmd:MD_Metadata | //idf:idfMdMetadata');
-                if (!$uuid) {
-                    $uuid = IdfHelper::getNodeValue($rootNode, "./gmd:fileIdentifier/gco:CharacterString");
-                }
                 if (!is_null($rootNode)) {
+                    if (!$uuid) {
+                        $uuid = IdfHelper::getNodeValue($rootNode, "./gmd:fileIdentifier/gco:CharacterString");
+                    }
                     $lang = Grav::instance()['language']->getLanguage();
 
                     return DetailParserMetadataIdfISO::parse($rootNode, $uuid, $dataSourceName, $providers, $lang);
