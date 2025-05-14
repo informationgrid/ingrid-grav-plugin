@@ -379,7 +379,6 @@ class InGridGravPlugin extends Plugin
         $this->addPage('/home/_search', 'home/_search/home-search.md', $pages->find('/'), '/home/_search');
         $this->addPage('/home/_hits', 'home/_hits/home-hits.md', $pages->find('/'), '/home/_hits');
         $this->addPage('/contact/success', 'contact/success/contact-success.md', $pages->find('/contact'));
-        $this->addPageFromTheme('/contact/form', 'contact/form/default.md', $pages->find('/contact'));
     }
 
     /*
