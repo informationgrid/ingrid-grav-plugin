@@ -167,7 +167,8 @@ class InGridGravPlugin extends Plugin
         }
 
         $theme = $this->grav['config']->get('system.pages.theme');
-        if ($theme == 'zdm') {
+        $headerUrl = $this->grav['config']->get('themes.' . $theme . '.header.url');
+        if ($headerUrl) {
             $this->getPageContentZDM($page);
         } else {
             $this->getPageContent($page);

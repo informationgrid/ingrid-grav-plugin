@@ -38,10 +38,10 @@ class LayoutZDMController
                 if ($this->headerBaseHrefRemove) {
                     $response = str_replace('<base href="https://www.kuestendaten.de"/>', '', $response);
                 }
-                $ingridHead = '<link rel="stylesheet" href="user/themes/zdm/css/style.css" type="text/css">'
-                    . '<link rel="stylesheet" href="user/themes/zdm/css/custom.css" type="text/css">';
+                $ingridHead = '<link rel="stylesheet" href="user/themes/itzbund_zdm/css/style.css" type="text/css">'
+                    . '<link rel="stylesheet" href="user/themes/itzbund_zdm/css/custom.css" type="text/css">';
                 if ($folder == 'measure') {
-                    $ingridHead .= '<link rel="stylesheet" href="user/themes/zdm/css/measure.css" type="text/css">';
+                    $ingridHead .= '<link rel="stylesheet" href="user/themes/itzbund_zdm/css/measure.css" type="text/css">';
                 }
                 $response = str_replace('  </head>', $ingridHead . '  </head>', $response);
                 $response = str_replace('  </head>', $ingridHead . '  </head>', $response);
