@@ -172,7 +172,7 @@ class SearchResponseTransformerClassic
                     $isSelectionSingle = $foundObject['selection_single'] ?? false;
                 }
                 if ($isSelectionSingle) {
-                    $found = array_search($key, explode(ElasticsearchService::$FILTER_SEPARATOR, $query_params[$facetConfigId]));
+                    $found = array_search($key, explode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $query_params[$facetConfigId]));
                     if ($found !== false) {
                         unset($query_params[$facetConfigId]);
                     } else {
@@ -181,7 +181,7 @@ class SearchResponseTransformerClassic
                 } else {
                     $valueAsArray = [];
                     if (!empty($query_params[$facetConfigId])) {
-                        $valueAsArray = explode(ElasticsearchService::$FILTER_SEPARATOR, $query_params[$facetConfigId]);
+                        $valueAsArray = explode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $query_params[$facetConfigId]);
                     }
                     $found = array_search($key, $valueAsArray);
                     if ($found !== false) {
@@ -190,7 +190,7 @@ class SearchResponseTransformerClassic
                         $valueAsArray[] = $key;
                     }
                     if (count($valueAsArray) > 0) {
-                        $query_params[$facetConfigId] = implode(ElasticsearchService::$FILTER_SEPARATOR, $valueAsArray);
+                        $query_params[$facetConfigId] = implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $valueAsArray);
                     } else {
                         if (isset($foundObject['facets'])) {
                             $activatableFacets = array_filter($foundObject['facets'], function ($facet) {
@@ -226,11 +226,11 @@ class SearchResponseTransformerClassic
                             } else {
                                 $paramValues = [];
                                 if (!empty($query_params[$otherKey])) {
-                                    $paramValues = explode(ElasticsearchService::$FILTER_SEPARATOR, $query_params[$otherKey]);
+                                    $paramValues = explode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $query_params[$otherKey]);
                                 }
                                 if (!in_array($otherParam, $paramValues)) {
                                     $paramValues[] = $otherParam;
-                                    $query_params[$otherKey] = implode(ElasticsearchService::$FILTER_SEPARATOR, $paramValues);
+                                    $query_params[$otherKey] = implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $paramValues);
                                 }
                             }
                         }
@@ -245,7 +245,7 @@ class SearchResponseTransformerClassic
                                 }
                             }
                             if (!empty($otherActiveFacets)) {
-                                $query_params[$facetConfigId] = implode(ElasticsearchService::$FILTER_SEPARATOR, $otherActiveFacets);
+                                $query_params[$facetConfigId] = implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $otherActiveFacets);
                             }
                         }
                     }

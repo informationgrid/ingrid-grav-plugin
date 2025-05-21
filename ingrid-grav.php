@@ -599,7 +599,7 @@ class InGridGravPlugin extends Plugin
                     $twig->twig_vars['csw_url'] = $this->config()['csw']['url'];
                     $twig->twig_vars['rdf_url'] = $this->config()['rdf']['url'];
                     $twig->twig_vars['display_sort_hits'] = $search->isSortHitsEnable();
-                    $twig->twig_vars['FILTER_SEPARATOR'] = ElasticsearchService::$FILTER_SEPARATOR;
+                    $twig->twig_vars['FACET_ENTRIES_SEPARATOR'] = ElasticsearchService::$FACET_ENTRIES_SEPARATOR;
                     $similar = new SimilarTermsController($this->grav, $config['sns']['similar_terms']['url']);
                     $twig->twig_vars['similar_terms'] = $similar->getContent();
                     break;
