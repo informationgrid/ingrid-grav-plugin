@@ -94,12 +94,13 @@ class SearchResultParserClassicISO
             "obj_serv_type" => $obj_serv_type,
             "mapUrl" => $capUrl ? CapabilitiesHelper::getMapUrl($capUrl, $servTypeVersion, $servType) : null,
             "mapUrlClient" => ElasticsearchHelper::getFirstValue($esHit, "capabilities_url_with_client"),
-            "wkt" => ElasticsearchHelper::getValue($esHit, "wkt_geo_text"),
-            "y1" => ElasticsearchHelper::getValue($esHit, "y1"),
-            "x1" => ElasticsearchHelper::getValue($esHit, "x1"),
-            "y2" => ElasticsearchHelper::getValue($esHit, "y2"),
-            "x2" => ElasticsearchHelper::getValue($esHit, "x2"),
+            "wkts" => ElasticsearchHelper::getValueArray($esHit, "wkt_geo_text"),
+            "y1" => ElasticsearchHelper::getValueArray($esHit, "y1"),
+            "x1" => ElasticsearchHelper::getValueArray($esHit, "x1"),
+            "y2" => ElasticsearchHelper::getValueArray($esHit, "y2"),
+            "x2" => ElasticsearchHelper::getValueArray($esHit, "x2"),
             "bwastr_name" => ElasticsearchHelper::getValueArray($esHit, "bwstr-bwastr_name"),
+            "bwastrs" => self::getBwaStrs($esHit),
             "bawauftragsnummer" => ElasticsearchHelper::getValue($esHit, "bawauftragsnummer"),
             "bawauftragstitel" => ElasticsearchHelper::getValue($esHit, "bawauftragstitel"),
             "citation" => ElasticsearchHelper::getValue($esHit, "additional_html_citation_quote"),
@@ -371,5 +372,28 @@ class SearchResultParserClassicISO
             "t1" => ElasticsearchHelper::getValueTime($esHit, "t1"),
             "t2" => ElasticsearchHelper::getValueTime($esHit, "t2"),
         ];
+    }
+
+    private static function getBwaStrs(\stdClass $esHit): array
+    {
+        $array = [];
+        $ids = ElasticsearchHelper::getValueArray($esHit, "bwstr-bwastr-id");
+        $froms = ElasticsearchHelper::getValueArray($esHit, "bwstr-strecken_km_von");
+        $tos = ElasticsearchHelper::getValueArray($esHit, "bwstr-strecken_km_bis");
+        if (!empty($ids) && !empty($froms) && !empty($tos)) {
+            for ($i = 0; $i < count($ids); $i++) {
+                $id = $ids[$i];
+                if (str_ends_with($id, '00')) {
+                    $id = substr($id, 0, -2);
+                    $id = $id . '01';
+                }
+                $array[] = [
+                    "id" => $id,
+                    "from" => $froms[$i],
+                    "to" => $tos[$i],
+                ];
+            }
+        }
+        return $array;
     }
 }

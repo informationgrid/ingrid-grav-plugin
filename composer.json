@@ -26,6 +26,7 @@
     },
     "classmap":  ["ingrid-grav.php"],
     "files": [
+      "classes/controller/BwastrController.php",
       "classes/controller/CatalogController.php",
       "classes/controller/CategoryController.php",
       "classes/controller/DatasourceController.php",

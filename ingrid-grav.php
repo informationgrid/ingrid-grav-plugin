@@ -110,6 +110,11 @@ class InGridGravPlugin extends Plugin
                     'onPageInitialized' => ['renderCustomTemplateCatalog', 0],
                 ]);
                 break;
+            case '/rest/getBwastrs':
+                $this->enable([
+                    'onPageInitialized' => ['renderCustomTemplateBwastrs', 0],
+                ]);
+                break;
             default:
                 // Get page content
                 $this->enable([
@@ -143,7 +148,7 @@ class InGridGravPlugin extends Plugin
         // Check themes config for redirected pages
         $uri = $this->grav['uri'];
         $uri_path = $uri->path();
-        $page = $this->grav['pages']->find($uri_path);
+        $page = $this->grav['pages']->find(empty($uri_path) ? '/' : $uri_path);
         if ($page) {
             $theme = $this->grav['config']->get('system.pages.theme');
             $pages_to_404 = $this->grav['config']->get('themes.' . $theme . '.redirect.pages_to_404');
@@ -489,6 +494,21 @@ class InGridGravPlugin extends Plugin
         try {
             $catalog = new CatalogController($this->grav, $this->configApiUrlCatalog);
             echo $catalog->getContentLeaf();
+        } catch (\Exception $e) {
+            $this->grav['log']->error($e->getMessage());
+        }
+        exit();
+    }
+
+    /*
+     * REST: BwaStr
+     */
+
+    public function renderCustomTemplateBwastrs(): void
+    {
+        try {
+            $bwastr = new BwastrController($this->grav);
+            echo $bwastr->getContent();
         } catch (\Exception $e) {
             $this->grav['log']->error($e->getMessage());
         }

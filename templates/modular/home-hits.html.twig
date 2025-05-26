@@ -56,7 +56,7 @@
                                 {% if bboxes %}
                                     <div class="xsmall-24 large-11 columns">
                                         <div class="map-wrapper">
-                                            {% include 'partials/global/map/map.html.twig' with { coords: bboxes, geojson: wkt, isDetail: false, mapId: hitMapId, mapHeight: '100%', usePopUp: false } %}
+                                            {% include 'partials/global/map/map.html.twig' with { coords: bboxes, geojsons: wkts, isDetail: false, mapId: hitMapId, mapHeight: '100%', usePopUp: false } %}
                                         </div>
                                     </div>
                                 {% endif %}
