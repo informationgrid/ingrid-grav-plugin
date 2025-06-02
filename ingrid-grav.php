@@ -87,6 +87,11 @@ class InGridGravPlugin extends Plugin
                     'onPageInitialized' => ['renderCustomTemplateUrlFileSize', 0],
                 ]);
                 break;
+            case '/rest/getUrlHttpImage':
+                $this->enable([
+                    'onPageInitialized' => ['renderCustomTemplateUrlHttpImage', 0],
+                ]);
+                break;
 
             case '/rest/createDetailZip':
                 // Create zip request
@@ -448,6 +453,30 @@ class InGridGravPlugin extends Plugin
         exit();
     }
 
+    public function renderCustomTemplateUrlHttpImage(): void
+    {
+        try {
+            $paramUrl = $this->grav['uri']->query('url') ?: "";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_COOKIESESSION, false);
+            curl_setopt($ch, CURLOPT_URL, $paramUrl);
+            curl_setopt($ch, CURLOPT_HEADER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_exec($ch);
+            $info = curl_getinfo($ch);
+            $redirect = $info['redirect_url'];
+            curl_close($ch);
+            if ($redirect) {
+                echo $redirect;
+            } else {
+                echo $paramUrl;
+            }
+        } catch (\Exception $e) {
+            $this->grav['log']->error('Error load http image url redirect: ' . $e->getMessage());
+        }
+        exit();
+    }
     /*
      * REST: Mime type
      */
