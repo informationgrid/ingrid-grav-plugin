@@ -15,6 +15,7 @@ class InGridGravTwigExtension extends GravExtension
     {
         return [
             new \Twig_SimpleFunction('addKeyValue', [$this, 'addKeyValueToMap']),
+            new \Twig_SimpleFunction('removeKey', [$this, 'removeKeyValueFromMap']),
             new \Twig_SimpleFunction('convertUrlInText', [$this, 'convertUrlInText']),
             new \Twig_SimpleFunction('getValueFromCodelist', [$this, 'getValueFromCodelist']),
             new \Twig_SimpleFunction('getActionLinkFromFacets', [$this, 'getActionLinkFromFacets']),
@@ -30,10 +31,18 @@ class InGridGravTwigExtension extends GravExtension
         return urldecode($text);
     }
 
-    public function addKeyValueToMap($map, $key, $value)
+    public function removeKeyValueFromMap($map, $key, $value)
     {
         if ($key && $value) {
             $map[$key] = $value;
+        }
+        return $map;
+    }
+
+    public function removeKeyValueToMap($map, $key)
+    {
+        if ($key) {
+            unset($map[$key]);
         }
         return $map;
     }
