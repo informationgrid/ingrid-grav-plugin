@@ -31,7 +31,7 @@ class InGridGravTwigExtension extends GravExtension
         return urldecode($text);
     }
 
-    public function removeKeyValueFromMap($map, $key, $value)
+    public function addKeyValueToMap($map, $key, $value)
     {
         if ($key && $value) {
             $map[$key] = $value;
@@ -39,7 +39,7 @@ class InGridGravTwigExtension extends GravExtension
         return $map;
     }
 
-    public function removeKeyValueToMap($map, $key)
+    public function removeKeyValueFromMap($map, $key)
     {
         if ($key) {
             unset($map[$key]);
