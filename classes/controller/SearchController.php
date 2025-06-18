@@ -92,6 +92,27 @@ class SearchController
         return $output;
     }
 
+    public function getContentSearchMarkers(): array
+    {
+        $output = [];
+
+        if ($this->theme === 'uvp') {
+            $this->page = $this->grav['uri']->query('page') ?: '';
+            $this->query = $this->grav['uri']->query('q') ?: '';
+            $searchSettings = $this->grav['config']->get('themes.' . $this->theme . '.hit_search') ?: [];
+            $facetConfig = $searchSettings['facet_config'] ?? [];
+            $this->selectedFacets = $this->getSelectedFacets($facetConfig);
+
+            $searchSettings['hits_num'] = 100;
+            $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $facetConfig, $searchSettings);
+            $hits = $service->getSearchResultsUnparsed($this->query ?? '', $this->page, $this->selectedFacets);
+            if ($hits) {
+                $output = $this->getMapMarkers($hits);
+            }
+        }
+        return $output;
+    }
+
     private function addFacetsBySelection(array &$facetConfig): void
     {
         $queryParams = $this->grav['uri']->query(null, true);

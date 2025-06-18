@@ -110,6 +110,11 @@ class InGridGravPlugin extends Plugin
                     'onTwigSiteVariables' => ['onTwigSiteVariablesMapMarkers', 0],
                 ]);
                 break;
+            case '/rest/getSearchMarkers':
+                $this->enable([
+                    'onTwigSiteVariables' => ['onTwigSiteVariablesSearchMarkers', 0],
+                ]);
+                break;
             case '/rest/getCatalogLeaf':
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateCatalog', 0],
@@ -633,7 +638,6 @@ class InGridGravPlugin extends Plugin
                     $similarTerms = new SimilarTermsController($this->grav, $this->configApiUrl);
                     $url = $similarTerms->updateQueryString($uri->post());
                     $this->grav->redirect($uri->route() . $url);
-                    break;
                 default:
                     $search = new SearchController($this->grav, $this->configApiUrl);
                     $search->getContent();
@@ -649,6 +653,12 @@ class InGridGravPlugin extends Plugin
                     $twig->twig_vars['rdf_url'] = $this->config()['rdf']['url'];
                     $twig->twig_vars['display_sort_hits'] = $search->isSortHitsEnable();
                     $twig->twig_vars['FACET_ENTRIES_SEPARATOR'] = ElasticsearchService::$FACET_ENTRIES_SEPARATOR;
+                    if ($search->results) {
+                        $found_key = array_search('procedure', array_column($search->results->facets, 'id'));
+                        if (isset($found_key)) {
+                            $this->grav['twig']->twig_vars['legend'] = json_encode(array($search->results->facets[$found_key]));
+                        }
+                    }
                     $similar = new SimilarTermsController($this->grav, $config['sns']['similar_terms']['url']);
                     $twig->twig_vars['similar_terms'] = $similar->getContent();
                     break;
@@ -711,6 +721,20 @@ class InGridGravPlugin extends Plugin
             try {
                 $search = new SearchController($this->grav, $this->configApiUrl);
                 $output = $search->getContentMapMarkers();
+                echo json_encode($output);
+            } catch (\Exception $e) {
+                $this->grav['log']->error($e->getMessage());
+            }
+        }
+        exit;
+    }
+
+    public function onTwigSiteVariablesSearchMarkers(): void
+    {
+        if (!$this->isAdmin()) {
+            try {
+                $search = new SearchController($this->grav, $this->configApiUrl);
+                $output = $search->getContentSearchMarkers();
                 echo json_encode($output);
             } catch (\Exception $e) {
                 $this->grav['log']->error($e->getMessage());

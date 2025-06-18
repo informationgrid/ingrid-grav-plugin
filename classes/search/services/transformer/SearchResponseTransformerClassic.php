@@ -45,6 +45,7 @@ class SearchResponseTransformerClassic
                                 $query['icon'] ?? null,
                                 $query['icon_text'] ?? null,
                                 $query['display_on_empty'] ?? false,
+                                $query['display_line_above'] ?? false,
                             );
                         } else if (isset($query['facets'])) {
                             $splitFacets = $query['facets'];
@@ -87,6 +88,10 @@ class SearchResponseTransformerClassic
                             $label,
                             $bucket->final->doc_count ?? $bucket->doc_count,
                             SearchResponseTransformerClassic::createActionUrl($uri, $facetConfig["id"], $key, $config),
+                            $query['icon'] ?? null,
+                            $query['icon_text'] ?? null,
+                            $query['display_on_empty'] ?? false,
+                            $query['display_line_above'] ?? false,
                         );
                     }
                 }

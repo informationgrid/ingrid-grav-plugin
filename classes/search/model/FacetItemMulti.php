@@ -10,6 +10,7 @@ readonly class FacetItemMulti
         public array $items,
         public ?string $icon = null,
         public ?bool $displayOnEmpty = false,
+        public ?bool $displayLineAbove = false,
     )
     {
     }
