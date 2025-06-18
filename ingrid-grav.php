@@ -659,6 +659,11 @@ class InGridGravPlugin extends Plugin
                             $this->grav['twig']->twig_vars['legend'] = json_encode(array($search->results->facets[$found_key]));
                         }
                     }
+                    $this->grav['twig']->twig_vars['requestLayer'] = $this->grav['uri']->query('layer') ?: "";
+                    $this->grav['twig']->twig_vars['mapParamE'] = $this->grav['uri']->query('E') ?: "";
+                    $this->grav['twig']->twig_vars['mapParamN'] = $this->grav['uri']->query('N') ?: "";
+                    $this->grav['twig']->twig_vars['mapParamZoom'] = $this->grav['uri']->query('zoom') ?: "";
+                    $this->grav['twig']->twig_vars['mapParamExtent'] = $this->grav['uri']->query('extent') ?: "";
                     $similar = new SimilarTermsController($this->grav, $config['sns']['similar_terms']['url']);
                     $twig->twig_vars['similar_terms'] = $similar->getContent();
                     break;
