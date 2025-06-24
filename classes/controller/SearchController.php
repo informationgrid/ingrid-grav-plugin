@@ -289,7 +289,7 @@ class SearchController
         }
         if ($parentId and !empty($values)) {
             if (!isset($params[$parentId])) {
-                $params[$parentId] = implode(',', $values);
+                $params[$parentId] = implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $values);
             }
         }
     }
