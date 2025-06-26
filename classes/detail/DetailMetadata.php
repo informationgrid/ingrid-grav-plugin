@@ -20,8 +20,10 @@ class DetailMetadata
             case 'uvp':
             case 'uvp-ni':
                 if (!is_null($rootNode)) {
+                    if (!$uuid) {
+                        $uuid = IdfHelper::getNodeValue($rootNode, "./id");
+                    }
                     $lang = Grav::instance()['language']->getLanguage();
-
                     return DetailParserMetadataIdfUVP::parse($rootNode, $uuid, $dataSourceName, $providers, $lang);
                 }
                 break;
@@ -32,7 +34,6 @@ class DetailMetadata
                         $uuid = IdfHelper::getNodeValue($rootNode, "./gmd:fileIdentifier/gco:CharacterString");
                     }
                     $lang = Grav::instance()['language']->getLanguage();
-
                     return DetailParserMetadataIdfISO::parse($rootNode, $uuid, $dataSourceName, $providers, $lang);
                 }
                 break;

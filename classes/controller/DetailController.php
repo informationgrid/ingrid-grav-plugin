@@ -73,10 +73,8 @@ class DetailController
                     $this->hit = $parser->parse($content, $this->uuid);
                 }
             } else {
-                if ($this->uuid) {
-                    $parser = new DetailMetadata($this->theme);
-                    $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
-                }
+                $parser = new DetailMetadata($this->theme);
+                $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
             }
         }
     }
