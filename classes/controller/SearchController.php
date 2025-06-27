@@ -44,7 +44,7 @@ class SearchController
         $facetConfig = $searchSettings['facet_config'] ?? [];
         $this->hitsNum = $searchSettings['hits_num'] ?? 0;
         $sortByDate = $searchSettings['sort']['sortByDate'] ?? false;
-        if (empty($ranking)) {
+        if (empty($this->ranking)) {
             if ($sortByDate) {
                 $this->ranking = 'date';
             } else {
