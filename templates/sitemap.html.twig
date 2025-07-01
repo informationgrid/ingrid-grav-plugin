@@ -2,6 +2,7 @@
 
 {% block content %}
     {% set menu_site = theme_var('menu.site') %}
+    {% set header_title_extend = theme_var('header.title_extend') %}
     <div class="search-filtered row content-small">
         <div class="columns">
             <div class="sitemap">
@@ -17,9 +18,9 @@
                                     {% set page_title = p.header.custom_title.html ?? p.title  %}
                                     {% set page_menu_title = p.header.custom_title.menu ?? p.title %}
                                     {% if page_url %}
-                                        <a class="icon" href="{{ page_url|e }}" title="{{ page_menu_title|t|e }}">
+                                        <a class="icon" href="{{ page_url|e }}" title="{{ page_menu_title|t(header_title_extend)|e }}">
                                             <span class="ic-ic-arrow-right"></span>
-                                            <span class="text">{{ page_title|t|e }}</span>
+                                            <span class="text">{{ page_title|t(header_title_extend)|e }}</span>
                                         </a>
                                     {% endif %}
                                 {% endif %}
@@ -37,9 +38,9 @@
                                     {% set page_title = p.header.custom_title.html ?? p.title  %}
                                     {% set page_menu_title = p.header.custom_title.menu ?? p.title %}
                                     {% if page_url %}
-                                        <a class="icon" href="{{ page_url|e }}" title="{{ page_menu_title|t }}">
+                                        <a class="icon" href="{{ page_url|e }}" title="{{ page_menu_title|t(header_title_extend) }}">
                                             <span class="ic-ic-arrow-right"></span>
-                                            <span class="text">{{ page_title|t|e }}</span>
+                                            <span class="text">{{ page_title|t(header_title_extend)|e }}</span>
                                         </a>
                                     {% endif %}
                                 {% endif %}
