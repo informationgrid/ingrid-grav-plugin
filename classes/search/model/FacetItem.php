@@ -13,6 +13,7 @@ readonly class FacetItem
         public ?string $iconText = null,
         public ?bool $displayOnEmpty = false,
         public ?bool $displayLineAbove = false,
+        public ?string $hiddenBy
     )
     {
     }

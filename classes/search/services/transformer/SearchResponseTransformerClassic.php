@@ -46,6 +46,7 @@ class SearchResponseTransformerClassic
                                 $query['icon_text'] ?? null,
                                 $query['display_on_empty'] ?? false,
                                 $query['display_line_above'] ?? false,
+                                $query['hidden_by'] ?? null,
                             );
                         } else if (isset($query['facets'])) {
                             $splitFacets = $query['facets'];
@@ -92,6 +93,7 @@ class SearchResponseTransformerClassic
                             $query['icon_text'] ?? null,
                             $query['display_on_empty'] ?? false,
                             $query['display_line_above'] ?? false,
+                            $query['hidden_by'] ?? null,
                         );
                     }
                 }
