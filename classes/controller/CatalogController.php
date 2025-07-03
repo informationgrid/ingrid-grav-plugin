@@ -182,73 +182,74 @@ class CatalogController
         if ($parentId) {
             $catalog_api = $catalog_api . '?parent=' . $parentId;
         }
-        $response = file_get_contents($catalog_api);
-        $items = json_decode($response, true);
-        $catalogLevel = $level + 1;
-        $freeAddresses = [];
-        foreach ($items as $item) {
-            $catalogId = $partner . '-' . substr(md5($catalogId . '-' . $item['uuid']), 0, 8);
-            $isAddress = $item['isAddress'];
-            $type = $item['docType'];
-            $isOpen = false;
-            $hasChildren = $item['hasChildren'];
-            if ($hasChildren) {
-                $isOpen = $this->checkIsCatalogNodeOpen($catalogId, $catalogLevel);
-                if ($isOpen) {
-                    $this->addToList($catalogId);
+        if (($response = @file_get_contents($catalog_api)) !== false) {
+            $items = json_decode($response, true);
+            $catalogLevel = $level + 1;
+            $freeAddresses = [];
+            foreach ($items as $item) {
+                $catalogId = $partner . '-' . substr(md5($catalogId . '-' . $item['uuid']), 0, 8);
+                $isAddress = $item['isAddress'];
+                $type = $item['docType'];
+                $isOpen = false;
+                $hasChildren = $item['hasChildren'];
+                if ($hasChildren) {
+                    $isOpen = $this->checkIsCatalogNodeOpen($catalogId, $catalogLevel);
+                    if ($isOpen) {
+                        $this->addToList($catalogId);
+                    }
+                }
+                $name = trim($isAddress ? implode(' ', array_reverse(explode(', ', $item['name']))) : $item['name']);
+                $name = explode('#locale-', $name)[0];
+                $node = [
+                    'name' => $name,
+                    'level' => $catalogLevel,
+                    'uuid' => $item['uuid'],
+                    'type' => $type,
+                    'type_name' => $isAddress ? $type : CodelistHelper::getCodelistEntry(["8000"], $type, $this->lang),
+                    'isOpen' => $isOpen,
+                    'hasChildren' => $item['hasChildren'],
+                    'ident' => $id,
+                    'isAddress' => $isAddress,
+                    'partner' => $partner,
+                    'id' => $catalogId
+                ];
+                if ($parentId == null && $isAddress && $type == '3') {
+                    $freeAddresses[] = $node;
+                } else {
+                    $list[] = $node;
                 }
             }
-            $name = trim($isAddress ? implode(' ', array_reverse(explode(', ', $item['name']))) : $item['name']);
-            $name = explode('#locale-', $name)[0];
-            $node = [
-                'name' => $name,
-                'level' => $catalogLevel,
-                'uuid' => $item['uuid'],
-                'type' => $type,
-                'type_name' => $isAddress ? $type : CodelistHelper::getCodelistEntry(["8000"], $type, $this->lang),
-                'isOpen' => $isOpen,
-                'hasChildren' => $item['hasChildren'],
-                'ident' => $id,
-                'isAddress' => $isAddress,
-                'partner' => $partner,
-                'id' => $catalogId
-            ];
-            if ($parentId == null && $isAddress && $type == '3') {
-                $freeAddresses[] = $node;
-            } else {
-                $list[] = $node;
+            if ($this->configCatalogSortByName) {
+                usort($list, array($this, 'compare_name'));
             }
-        }
-        if ($this->configCatalogSortByName) {
-            usort($list, array($this, 'compare_name'));
-        }
 
-        // Free addresses IGE-NG
-        $found = array_search($this->grav['language']->translate('CATALOG_HIERARCHY.TREE_ADDRESSES_FREE'), array_column($list, 'name'));
-        if ($found) {
-            $tmpEntry = $list[$found];
-            unset($list[$found]);
-            array_unshift($list, $tmpEntry);
-        }
-        // Free addresses IGE-Classic
-        if (!empty($freeAddresses)) {
-            $freeAddressId = $partner . '-' . substr(md5('CATALOG_HIERARCHY.TREE_ADDRESSES_FREE'), 0, 8);
-            $isOpen = $this->checkIsCatalogNodeOpen($freeAddressId, $level + 1);
-            if ($isOpen) {
-                $this->addToList($freeAddressId);
+            // Free addresses IGE-NG
+            $found = array_search($this->grav['language']->translate('CATALOG_HIERARCHY.TREE_ADDRESSES_FREE'), array_column($list, 'name'));
+            if ($found) {
+                $tmpEntry = $list[$found];
+                unset($list[$found]);
+                array_unshift($list, $tmpEntry);
             }
-            usort($freeAddresses, array($this, 'compare_name'));
-            array_unshift($list , [
-                'name' => 'CATALOG_HIERARCHY.TREE_ADDRESSES_FREE',
-                'level' => $level + 1,
-                'type' => '1000',
-                'isOpen' => $isOpen,
-                'children' => $freeAddresses,
-                'ident' => $freeAddressId,
-                'hasChildren' => count($freeAddresses) > 0,
-                'partner' => $partner,
-                'id' => $freeAddressId
-            ]);
+            // Free addresses IGE-Classic
+            if (!empty($freeAddresses)) {
+                $freeAddressId = $partner . '-' . substr(md5('CATALOG_HIERARCHY.TREE_ADDRESSES_FREE'), 0, 8);
+                $isOpen = $this->checkIsCatalogNodeOpen($freeAddressId, $level + 1);
+                if ($isOpen) {
+                    $this->addToList($freeAddressId);
+                }
+                usort($freeAddresses, array($this, 'compare_name'));
+                array_unshift($list, [
+                    'name' => 'CATALOG_HIERARCHY.TREE_ADDRESSES_FREE',
+                    'level' => $level + 1,
+                    'type' => '1000',
+                    'isOpen' => $isOpen,
+                    'children' => $freeAddresses,
+                    'ident' => $freeAddressId,
+                    'hasChildren' => count($freeAddresses) > 0,
+                    'partner' => $partner,
+                    'id' => $freeAddressId
+                ]);
+            }
         }
         return $list;
     }
