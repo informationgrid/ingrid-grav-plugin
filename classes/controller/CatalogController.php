@@ -222,12 +222,15 @@ class CatalogController
         if ($this->configCatalogSortByName) {
             usort($list, array($this, 'compare_name'));
         }
-        $found = array_search('Freie Adressen', array_column($list, 'name'));
+
+        // Free addresses IGE-NG
+        $found = array_search($this->grav['language']->translate('CATALOG_HIERARCHY.TREE_ADDRESSES_FREE'), array_column($list, 'name'));
         if ($found) {
             $tmpEntry = $list[$found];
             unset($list[$found]);
             array_unshift($list, $tmpEntry);
         }
+        // Free addresses IGE-Classic
         if (!empty($freeAddresses)) {
             $freeAddressId = $partner . '-' . substr(md5('CATALOG_HIERARCHY.TREE_ADDRESSES_FREE'), 0, 8);
             $isOpen = $this->checkIsCatalogNodeOpen($freeAddressId, $level + 1);
