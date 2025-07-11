@@ -34,7 +34,7 @@
                                         </a>
                                         {% if hit.time %}
                                         <div class="helper text date">
-                                            <span class="">{{ hit.time }}</span>
+                                            <span class="">{{ hit.time|date("d.m.Y") }}</span>
                                         </div>
                                         {% endif %}
                                         {% if hit.summary %}
