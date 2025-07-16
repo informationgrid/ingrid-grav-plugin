@@ -318,6 +318,25 @@ class SearchResultParserClassicISO
                     "typeName" => $format == "3600" ? CodelistHelper::getCodelistEntry('8000', '1', 'de') : null,
                     "kind" => $kind,
                 ];
+                // Link zur Verordnung
+                if ($format == "5302") {
+                    $kind = "regulation";
+                    $array[] = [
+                        "url" => $url,
+                        "title" => !empty($urlReferenceContent[$count]) ? $urlReferenceContent[$count] : $url,
+                        "kind" => $kind,
+                    ];
+                }
+                if ($kind == "other") {
+                    $array[] = [
+                        "url" => $url,
+                        "title" => !empty($urlReferenceContent[$count]) ? $urlReferenceContent[$count] : $url,
+                        "serviceType" => $format == "9900" && count($urlReferenceDatatype) > $count ? $urlReferenceDatatype[$count] : "",
+                        "type" => $format == "3600" ? "1" : null,
+                        "typeName" => $format == "3600" ? CodelistHelper::getCodelistEntry('8000', '1', 'de') : null,
+                        "kind" => "other_exclude_regulation",
+                    ];
+                }
                 if (count($urlReferenceDatatype) > $count) {
                     if (!in_array($urlReferenceDatatype[$count], $serviceTypes)) {
                         $serviceTypes[] = $urlReferenceDatatype[$count];
