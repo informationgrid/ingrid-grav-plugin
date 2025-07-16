@@ -319,7 +319,7 @@ class SearchResultParserClassicISO
                     "kind" => $kind,
                 ];
                 // Link zur Verordnung
-                if ($format == "5302") {
+                if ($format == "9980") {
                     $kind = "regulation";
                     $array[] = [
                         "url" => $url,
