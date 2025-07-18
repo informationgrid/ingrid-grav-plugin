@@ -31,10 +31,13 @@ class SearchResponseTransformerClassic
                     if (isset($key)) {
                         $label = $query['label'] ?? strtoupper('FACETS.' . $facetConfig['id'] . '.' . $key);
                         if (isset($facetConfig['codelist']) or isset($query['codelist'])) {
-                            $label = CodelistHelper::getCodelistEntryByIdent(
+                            $codelistValue = CodelistHelper::getCodelistEntryByIdent(
                                 $query['codelist'] ?? $facetConfig['codelist'],
                                     $query['codelist_entry_id'] ?? $facetConfig['codelist_entry_id'] ?? $key,
                                 $lang);
+                            if ($codelistValue) {
+                                $label = $codelistValue;
+                            }
                         }
                         if (isset($query['query'])) {
                             $items[] = new FacetItem(
