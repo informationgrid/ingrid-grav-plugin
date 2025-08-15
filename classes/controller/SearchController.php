@@ -36,14 +36,22 @@ class SearchController
 
     public function getContent(): void
     {
-        $this->page = $this->grav['uri']->query('page') ?: 1;
-        $this->ranking = $this->grav['uri']->query('ranking') ?: '';
+        $uri = $this->grav['uri'];
+        $this->page = $uri->query('page') ?: 1;
+        $this->ranking = $uri->query('ranking') ?: '';
+        $query = $uri->query('q') ?? '';
 
         // Theme config
         $searchSettings = $this->grav['config']->get('themes.' . $this->theme . '.hit_search') ?? [];
         $facetConfig = $searchSettings['facet_config'] ?? [];
         $this->hitsNum = $searchSettings['hits_num'] ?? 0;
-        $sortByDate = $searchSettings['sort']['sortByDate'] ?? false;
+
+        if (empty($query)) {
+            $sortByDate = $searchSettings['sort']['emptyQuerySortByDate'] ?? false;
+        } else {
+            $sortByDate = $searchSettings['sort']['sortByDate'] ?? false;
+        }
+
         if (empty($this->ranking)) {
             if ($sortByDate) {
                 $this->ranking = 'date';

@@ -34,8 +34,14 @@ class SearchServiceImpl implements SearchService
         $this->queryStringOperator = $searchSettings['query_string_operator'] ?? 'AND';
         $this->requestedFields = $searchSettings['requested_fields'] ?? [];
         $this->searchSourceSettings = $searchSettings['source'] ?? [];
-        $sortByDate = $searchSettings['sort']['sortByDate'] ?? false;
         $ranking = $uri->query('ranking') ?? '';
+        $query = $uri->query('q') ?? '';
+        if (empty($query)) {
+            $sortByDate = $searchSettings['sort']['emptyQuerySortByDate'] ?? false;
+        } else {
+            $sortByDate = $searchSettings['sort']['sortByDate'] ?? false;
+        }
+
         if (!empty($ranking)) {
             if ($ranking === 'date') {
                 $sortByDate = true;
