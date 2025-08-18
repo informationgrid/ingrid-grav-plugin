@@ -1,5 +1,8 @@
 en:
   PLUGIN_INGRID_GRAV:
+    DEBUG:
+      TITLE: Debug
+      HELP: Debug-Meldungen werden im grav.log ausgegeben.
     INGRID_API:
       TITLE: InGrid-API
       URL: URL
@@ -23,6 +26,9 @@ en:
         URL_HELP: Trage Sie hier die URL zur SNS-API für die "Ähnliche Begriffe" ein.
 de:
   PLUGIN_INGRID_GRAV:
+    DEBUG:
+      TITLE: Debug
+      HELP: Debug-Meldungen werden im grav.log ausgegeben.
     INGRID_API:
       TITLE: InGrid-API
       URL: URL

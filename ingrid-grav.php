@@ -74,7 +74,9 @@ class InGridGravPlugin extends Plugin
         $uri = $this->grav['uri'];
         $uri_path = $uri->path();
 
-        $this->grav['log']->debug('Incoming request URL on ingrid-grav plugin: ' . $uri_path);
+        if ($this->config()['debug']) {
+            $this->grav['log']->debug('Incoming request URL on ingrid-grav plugin: ' . $uri_path);
+        }
         // Get rest content
         switch ($uri_path) {
             case '/rest/getMimeType':

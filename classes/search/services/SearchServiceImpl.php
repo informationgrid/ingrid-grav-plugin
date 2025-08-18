@@ -14,6 +14,7 @@ class SearchServiceImpl implements SearchService
     private int $hitsNum;
     private Client $client;
     private $log;
+    private bool $isDebug;
     private array $facet_config;
     private array $addToSearch;
     private bool $sortByDate;
@@ -27,6 +28,7 @@ class SearchServiceImpl implements SearchService
         $this->api = $grav['config']->get('plugins.ingrid-grav.ingrid_api.url');
         $this->client = new Client(['base_uri' => $this->api]);
         $this->log = $grav['log'];
+        $this->isDebug = $grav['config']->get('plugins.ingrid-grav.debug');
         $this->facet_config = $facetConfig;
         $this->addToSearch = $searchSettings['add_to_search'] ?? [];
         $this->hitsNum = $searchSettings['hits_num'] ?? 0;
@@ -143,7 +145,9 @@ class SearchServiceImpl implements SearchService
         SearchQueryHelper::replaceInGridQuery($query);
         SearchQueryHelper::transformColonQuery($query);
         $result = ElasticsearchService::convertToQuery($query, $this->facet_config, $page, $this->hitsNum, $selectedFacets, $this->addToSearch, $this->sortByDate, $this->queryFields, $this->queryStringOperator, $this->requestedFields, $this->searchSourceSettings);
-        $this->log->debug('Elasticsearch query: ' . $result);
+        if ($this->isDebug) {
+            $this->log->debug('Elasticsearch query: ' . $result);
+        }
         return $result;
     }
 

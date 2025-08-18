@@ -8,6 +8,8 @@ use GuzzleHttp\Client;
 class DetailController
 {
     public Grav $grav;
+    public $log;
+    public bool $isDebug;
     public string $configApi;
     public string $lang;
     public string $uuid;
@@ -23,6 +25,8 @@ class DetailController
     {
         $this->grav = $grav;
         $this->configApi = $api;
+        $this->log = $grav['log'];
+        $this->isDebug = $grav['config']->get('plugins.ingrid-grav.debug');
         $this->lang = $grav['language']->getLanguage();
         $this->uuid = $this->grav['uri']->query('docuuid') ?? '';
         $this->type = $this->grav['uri']->query('isAddress') ? 'address' : 'metadata';
@@ -59,7 +63,7 @@ class DetailController
             try {
                 $response = file_get_contents($this->cswUrl);
             } catch (\Exception $e) {
-                $this->grav['log']->error('Error loading detail with cswUrl "' . $this->cswUrl . '": ' . $e->getMessage());
+                $this->log->error('Error loading detail with cswUrl "' . $this->cswUrl . '": ' . $e->getMessage());
             }
         }
 
@@ -119,7 +123,7 @@ class DetailController
                 'body' => $this->transformQuery($uuid, $type)
             ])->getBody()->getContents();
         } catch (\Exception $e) {
-            $this->grav['log']->error('Error loading detail with uuid "' . $uuid . '": ' . $e->getMessage());
+            $this->log->error('Error loading detail with uuid "' . $uuid . '": ' . $e->getMessage());
         }
         return null;
     }
@@ -161,7 +165,9 @@ class DetailController
             "fields" => $requestedFields,
             "_source" => $source
         ));
-        $this->grav['log']->debug('Elasticsearch query detail: ' . $query);
+        if ($this->isDebug) {
+            $this->log->debug('Elasticsearch query detail: ' . $query);
+        }
         return $query;
     }
 
