@@ -22,7 +22,7 @@ class HitOverviewController
         $hitsNum = $searchSettings['hits_num'] ?? 0;
         if ($hitsNum > 0) {
             $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $facetConfig, $searchSettings);
-            return $service->getSearchResults("", 1, [], $this->grav['uri'], $lang, $theme);
+            return $service->getSearchResults($searchSettings['query'], 1, [], $this->grav['uri'], $lang, $theme);
         }
         return null;
     }
