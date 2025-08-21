@@ -1,8 +1,7 @@
-{% if search_result.hits|length > 0 %}
-    {% include 'partials/global/map/leaflet.html.twig' %}
-{% endif %}
-
 <div class="search-filtered">
+    {% if search_result.hits|length > 0 %}
+        {% include 'partials/global/map/leaflet.html.twig' %}
+    {% endif %}
     {% include 'partials/global/map/overlay.html.twig' %}
     <div id="searchResult" class="row">
         <div id="filter" class="xsmall-24 large-8 xlarge-6 columns">
