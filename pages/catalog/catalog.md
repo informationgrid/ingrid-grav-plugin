@@ -11,4 +11,5 @@ visible: true
 cache_enable: false
 routes:
   default: '/datenkataloge'
+content_header_disabled: true
 ---
