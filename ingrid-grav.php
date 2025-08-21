@@ -317,6 +317,12 @@ class InGridGravPlugin extends Plugin
         if (!$page) {
             $page = new Page;
             $pluginPage = new \SplFileInfo(__DIR__ . '/pages/' . $filename);
+
+            // Check for theme override pages
+            $themeFolder = $this->grav['locator']->findResource('theme://pages/plugin/' . $filename);
+            if ($themeFolder) {
+                $pluginPage = new \SplFileInfo($themeFolder);
+            }
             if (!empty($pluginPage)) {
                 $page->init($pluginPage);
 
