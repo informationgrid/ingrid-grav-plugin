@@ -209,9 +209,6 @@ class SearchController
         if (isset($query_params['page'])) {
             unset($query_params['page']);
         }
-        if (isset($query_params['ranking'])) {
-            unset($query_params['ranking']);
-        }
         $query_string[] = http_build_query($query_params);
 
         $url .= '?' . join('&', $query_string);
