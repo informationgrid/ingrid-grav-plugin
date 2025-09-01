@@ -587,6 +587,10 @@ class InGridGravPlugin extends Plugin
                     $filename = $dirFile;
                 }
             }
+            // get current memory_limit
+            $memLimit = ini_get('memory_limit');
+            // set it to unlimit
+            ini_set('memory_limit', '-1');
             $file = file($dir . '/' . $filename);
             if ($file) {
                 header('Content-Type: application/zip');
@@ -594,6 +598,8 @@ class InGridGravPlugin extends Plugin
                 header('Content-Disposition: attachment; filename="' . $filename . '"');
                 readfile($dir . '/' . $filename);
             }
+            // set memory_limit back
+            ini_set("memory_limit", $memLimit);
         } catch (\Exception $e) {
             $this->grav['log']->error($e->getMessage());
         }
