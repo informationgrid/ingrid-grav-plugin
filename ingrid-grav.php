@@ -59,6 +59,16 @@ class InGridGravPlugin extends Plugin
     public function onPluginsInitialized(): void
     {
 
+        // Set proxy
+        $systemProxy = $this->grav['config']->get('system.http.proxy');
+        $streamContext =  array(
+            'http' => array(
+                'timeout' => 30,
+                'proxy' => $systemProxy ? 'http://' . $systemProxy : '',
+            )
+        );
+        stream_context_set_default($streamContext);
+
         $config = $this->config();
         $this->configApiUrl = $config['ingrid_api']['url'];
         $this->configApiUrlCatalog = $this->configApiUrl . '/portal/catalogs';
