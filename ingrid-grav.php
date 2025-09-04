@@ -463,9 +463,7 @@ class InGridGravPlugin extends Plugin
     {
         try {
             $paramUrl = $this->grav['uri']->query('url') ?: "";
-            $opts['http']['timeout'] = 3;
-            $context = stream_context_create( $opts );
-            $headers = get_headers($paramUrl, true, $context);
+            $headers = get_headers($paramUrl, true);
             if (substr($headers[0], 9, 3) == 200) {
                 $contentLength = $headers['Content-Length'];
                 echo StringHelper::formatBytes($contentLength);
