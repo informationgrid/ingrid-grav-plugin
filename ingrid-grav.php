@@ -461,15 +461,15 @@ class InGridGravPlugin extends Plugin
 
     public function renderCustomTemplateUrlFileSize(): void
     {
+        $paramUrl = $this->grav['uri']->query('url') ?: "";
         try {
-            $paramUrl = $this->grav['uri']->query('url') ?: "";
             $headers = get_headers($paramUrl, true);
             if (substr($headers[0], 9, 3) == 200) {
                 $contentLength = $headers['Content-Length'];
                 echo StringHelper::formatBytes($contentLength);
             }
         } catch (\Exception $e) {
-            $this->grav['log']->error('Error load file size: ' . $e->getMessage());
+            $this->grav['log']->error('Error load file size for '. $paramUrl . ': ' . $e->getMessage());
         }
         exit();
     }
@@ -582,9 +582,9 @@ class InGridGravPlugin extends Plugin
 
     public function renderCustomTemplateDetailGetZip(): void
     {
+        $paramUuid = $this->grav['uri']->query('uuid');
+        $paramPlugId = $this->grav['uri']->query('plugid');
         try {
-            $paramUuid = $this->grav['uri']->query('uuid');
-            $paramPlugId = $this->grav['uri']->query('plugid');
             $locator = $this->grav['locator'];
             $folderPath = $locator->findResource('user-data://', true);
             $dir = $folderPath . '/downloads/zip/' . $paramPlugId . '/' . $paramUuid;
@@ -607,9 +607,9 @@ class InGridGravPlugin extends Plugin
                 readfile($dir . '/' . $filename);
             }
             // set memory_limit back
-            ini_set("memory_limit", $memLimit);
+            ini_set('memory_limit', $memLimit);
         } catch (\Exception $e) {
-            $this->grav['log']->error($e->getMessage());
+            $this->grav['log']->error($paramUuid . ': ' .$e->getMessage());
         }
         exit();
     }

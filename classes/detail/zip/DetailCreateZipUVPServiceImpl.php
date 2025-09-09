@@ -18,7 +18,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
 
     public function __construct(string $path, string $title, string $uuid, string $plugId, Grav $grav)
     {
-        $this->title = $title;
+        $this->title = StringHelper::convertFilename($title);
         $this->uuid = $uuid;
         $this->plugId = $plugId;
         $this->grav = $grav;
@@ -29,7 +29,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
         $this->filenameProcess = $this->path . '/PROCESS_RUNNING';
         $this->filenameStats = $this->path . '/stats.json';
         $this->filenameStatsUpdate = $this->path . '/stats-update.json';
-        $this->filenameZip = $this->path . '/' . $title . '.zip';
+        $this->filenameZip = $this->path . '/' . $this->title . '.zip';
     }
 
     public function parse(\SimpleXMLElement $content): ?array
@@ -46,13 +46,13 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
             }
             unlink($this->filenameProcess);
         }
-        if(file_exists($this->filenameZip)) {
+        if (file_exists($this->filenameZip)) {
             $filesize = filesize($this->filenameZip);
             if ($filesize) {
                 return ['rest/getDetailZip?plugid=' . $this->plugId . '&uuid=' . $this->uuid, StringHelper::formatBytes($filesize)];
             }
         }
-        return [];
+        return ['', ''];
     }
 
     private function updateZip(array $statsItems): void
@@ -87,7 +87,9 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     $fileName = $stats['name'];
                     $filePath = $stats['path'];
                     $fileUrl = $stats['link'];
-                    $zip->addFromString($filePath . '/' . $fileName, file_get_contents($fileUrl));
+                    if (($response = @file_get_contents($fileUrl)) !== false) {
+                        $zip->addFromString($filePath . '/' . $fileName, $response);
+                    }
                 }
                 $zip->close();
             }
