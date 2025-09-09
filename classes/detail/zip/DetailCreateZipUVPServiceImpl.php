@@ -128,14 +128,16 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                         $stepDate = IdfHelper::getNodeValue($node , './datePeriod/from | ./date/from');
                         $docs = IdfHelper::getNodeList($node, './docs[./*]');
                         if (count($docs) > 0) {
-                            $stepFolder = date_format(date_create($stepDate), 'Ymd') . '_' . $this->grav['language']->translate('SEARCH_DETAIL.STEPS_UVP_' . strtoupper($stepType));
+                            $tmpStepFolder = $stepType ? '_' . $this->grav['language']->translate('SEARCH_DETAIL.STEPS_UVP_' . strtoupper($stepType)) : '';
+                            $stepFolder = date_format(date_create($stepDate), 'Ymd') . $tmpStepFolder;
                             foreach ($docs as $doc) {
                                 $links = IdfHelper::getNodeList($doc, './doc[./*]');
                                 if (count($links) > 0) {
                                     $docType = IdfHelper::getNodeValue($doc, './@type');
                                     $docFolder = '';
                                     if(!empty($docType)) {
-                                        $docFolder = $this->grav['language']->translate('SEARCH_DETAIL.UVP_' . strtoupper($stepType) . '_DOC_' . strtoupper($docType));
+                                        $tmpStepFolder = $stepType ? '_' . strtoupper($stepType) : '_NEG';
+                                        $docFolder = $this->grav['language']->translate('SEARCH_DETAIL.UVP' . $tmpStepFolder . '_DOC_' . strtoupper($docType));
                                     }
                                     foreach ($links as $link) {
                                         $url = IdfHelper::getNodeValue($link, './link');
