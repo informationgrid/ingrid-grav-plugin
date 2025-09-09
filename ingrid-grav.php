@@ -465,8 +465,10 @@ class InGridGravPlugin extends Plugin
         try {
             $headers = get_headers($paramUrl, true);
             if (substr($headers[0], 9, 3) == 200) {
-                $contentLength = $headers['Content-Length'];
-                echo StringHelper::formatBytes($contentLength);
+                if (isset($headers['Content-Length'])) {
+                    $contentLength = $headers['Content-Length'];
+                    echo StringHelper::formatBytes($contentLength);
+                }
             }
         } catch (\Exception $e) {
             $this->grav['log']->error('Error load file size for '. $paramUrl . ': ' . $e->getMessage());
