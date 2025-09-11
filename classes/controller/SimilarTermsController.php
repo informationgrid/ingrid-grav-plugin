@@ -46,7 +46,7 @@ class SimilarTermsController
             if ($this->isDebug) {
                 $this->log->debug('Search synonyms_only similar terms with: ' . $similarSynonymUrl);
             }
-            if (($similarSynonymsResponse = @file_get_contents($similarSynonymUrl)) !== false) {
+            if (($similarSynonymsResponse = HttpHelper::getFileContent($similarSynonymUrl)) !== false) {
                 $synonyms = json_decode($similarSynonymsResponse);
                 if (isset($synonyms->results)) {
                     foreach ($synonyms->results as $synonym) {
@@ -57,7 +57,7 @@ class SimilarTermsController
                             if ($this->isDebug) {
                                 $this->log->debug('Search similar terms with: ' . $similarUrl);
                             }
-                            if (($response = @file_get_contents($similarUrl)) !== false) {
+                            if (($response = HttpHelper::getFileContent($similarUrl)) !== false) {
                                 $content = simplexml_load_string($response);
                                 $labels = RdfHelper::getNodeValueList($content, '//skos:altLabel[@xml:lang="' . $this->lang . '"]');
                                 foreach ($labels as $label) {

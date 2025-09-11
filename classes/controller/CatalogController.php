@@ -39,7 +39,7 @@ class CatalogController
     {
         $list = array();
 
-        if (($response = @file_get_contents($this->configApi)) !== false) {
+        if (($response = HttpHelper::getFileContent($this->configApi)) !== false) {
             $items = json_decode($response, true);
             $partners = CodelistHelper::getCodelistPartners();
             foreach ($partners as $partner) {
@@ -182,7 +182,7 @@ class CatalogController
         if ($parentId) {
             $catalog_api = $catalog_api . '?parent=' . $parentId;
         }
-        if (($response = @file_get_contents($catalog_api)) !== false) {
+        if (($response = HttpHelper::getFileContent($catalog_api)) !== false) {
             $items = json_decode($response, true);
             $catalogLevel = $level + 1;
             $freeAddresses = [];

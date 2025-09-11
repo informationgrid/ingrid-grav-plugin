@@ -37,7 +37,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
         if (!file_exists($this->filenameProcess)) {
             if (!file_exists($this->filenameStats)) {
                 self::createStatsJson($content, $this->filenameStats);
-                self::createZip(json_decode(file_get_contents($this->filenameStats), true));
+                self::createZip(json_decode(HttpHelper::getFileContent($this->filenameStats)));
             } else {
                 self::createStatsJson($content, $this->filenameStatsUpdate);
                 [$addItems, $deleteItems] = self::compareStats($this->filenameStats, $this->filenameStatsUpdate);
@@ -71,7 +71,9 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     $fileName = $stats['name'];
                     $filePath = $stats['path'];
                     $fileUrl = $stats['link'];
-                    $zip->addFromString($filePath . '/' . $fileName, file_get_contents($fileUrl));
+                    if (($response = HttpHelper::getFileContent($fileUrl)) !== false) {
+                        $zip->addFromString($filePath . '/' . $fileName, $response);
+                    }
                 }
                 $zip->close();
             }
@@ -87,7 +89,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     $fileName = $stats['name'];
                     $filePath = $stats['path'];
                     $fileUrl = $stats['link'];
-                    if (($response = @file_get_contents($fileUrl)) !== false) {
+                    if (($response = HttpHelper::getFileContent($fileUrl)) !== false) {
                         $zip->addFromString($filePath . '/' . $fileName, $response);
                     }
                 }
@@ -97,8 +99,8 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
     }
     private function compareStats(string $filenameStats, string $filenameStatsUpdate): array
     {
-        $itemsJson = json_decode(file_get_contents($filenameStats), true);
-        $itemsUpdateJson = json_decode(file_get_contents($filenameStatsUpdate), true);
+        $itemsJson = json_decode(HttpHelper::getFileContent($filenameStats), true);
+        $itemsUpdateJson = json_decode(HttpHelper::getFileContent($filenameStatsUpdate), true);
         foreach ($itemsUpdateJson as $key => $item) {
             if ($itemsJson[$key]) {
                 $result_array = array_diff($item, $itemsJson[$key]);

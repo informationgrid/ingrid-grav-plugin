@@ -61,7 +61,7 @@ class DetailController
             }
         } else if ($this->cswUrl) {
             try {
-                $response = file_get_contents($this->cswUrl);
+                $response = HttpHelper::getFileContent($this->cswUrl);
             } catch (\Exception $e) {
                 $this->log->error('Error loading detail with cswUrl "' . $this->cswUrl . '": ' . $e->getMessage());
             }

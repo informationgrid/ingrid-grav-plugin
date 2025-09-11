@@ -34,7 +34,7 @@ class LayoutZDMController
         $cacheId = md5($url);
         $header = $this->getCacheData($cache, $cacheId);
         if (empty($header)) {
-            if (($response = @file_get_contents($url)) !== false) {
+            if (($response = HttpHelper::getFileContent($url)) !== false) {
                 if ($this->headerBaseHrefRemove) {
                     $response = str_replace('<base href="https://www.kuestendaten.de"/>', '', $response);
                 }
@@ -69,7 +69,7 @@ class LayoutZDMController
         $cacheId = md5($url);
         $footer = $this->getCacheData($cache, $cacheId);
         if (empty($footer)) {
-            if (($response = @file_get_contents($url)) !== false) {
+            if (($response = HttpHelper::getFileContent($url)) !== false) {
                 $cache->save($cacheId, $response);
                 return $response;
             }
