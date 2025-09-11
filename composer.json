@@ -1,0 +1,57 @@
+{
+  "name": "khanh-toan-tran/ingrid-grav",
+  "type": "grav-plugin",
+  "description": "InGrid functions for GravCMS",
+  "keywords": ["plugin"],
+  "homepage": "https://github.com/informationgrid/ingrid-grav-plugin",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Khanh Toan Tran",
+      "email": "khanh.toan.tran@wemove.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=8.3",
+    "guzzlehttp/guzzle": "^7.0",
+    "guzzlehttp/psr7": "^1.7"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^11"
+  },
+  "autoload": {
+    "psr-4": {
+      "Grav\\Plugin\\InGridGrav\\": "classes/"
+    },
+    "classmap":  ["ingrid-grav.php"],
+    "files": [
+      "classes/controller/BwastrController.php",
+      "classes/controller/CatalogController.php",
+      "classes/controller/CategoryController.php",
+      "classes/controller/DatasourceController.php",
+      "classes/controller/DetailController.php",
+      "classes/controller/HelpController.php",
+      "classes/controller/HitOverviewController.php",
+      "classes/controller/SearchController.php",
+      "classes/controller/ProviderController.php",
+      "classes/controller/SimilarTermsController.php",
+      "classes/controller/LayoutZDMController.php",
+      "classes/detail/DetailAddress.php",
+      "classes/detail/DetailMetadata.php",
+      "classes/detail/zip/DetailCreateZipService.php",
+      "classes/detail/zip/DetailCreateZipUVPServiceImpl.php",
+      "classes/search/model/SearchResult.php",
+      "classes/search/model/SearchResultHit.php",
+      "classes/search/model/FacetResult.php",
+      "classes/search/model/FacetItem.php",
+      "classes/search/model/FacetItemMulti.php",
+      "classes/search/services/SearchService.php",
+      "classes/search/services/SearchServiceImpl.php",
+      "classes/search/services/transformer/SearchResponseTransformerClassic.php",
+      "classes/search/services/parser/SearchResultParserClassicISO.php",
+      "classes/search/services/parser/SearchResultParserClassicUVP.php"
+    ]
+
+  }
+}

@@ -1,0 +1,52 @@
+en:
+  PLUGIN_INGRID_GRAV:
+    DEBUG:
+      TITLE: Debug
+      HELP: Debug-Meldungen werden im grav.log ausgegeben.
+    INGRID_API:
+      TITLE: InGrid-API
+      URL: URL
+      URL_HELP: InGrid-API-URL eintragen
+      USER: Benutzer (htaccess)
+      USER_HELP: Benutzername zu InGrid-API. Per Docker-ENV "INGRID_API_USER" setzbar.
+      PASS: Passwort (htaccess)
+      PASS_HELP: Passwort zu Geo-API. Per Docker-ENV "INGRID_API_PASS" setzbar.
+    CSW:
+      TITLE: CSW
+      URL: Link zum Interface-CSW
+      URL_HELP: Trage Sie hier die URL zum Interface-CSW ein.
+    RDF:
+      TITLE: RDF
+      URL: Link zum Interface-RDF
+      URL_HELP: Trage Sie hier die URL zum Interface-RDF ein.
+    SNS:
+      SIMILAR_TERMS:
+        TITLE: SNS
+        URL: SNS-API - Ähnliche Begriffe
+        URL_HELP: Trage Sie hier die URL zur SNS-API für die "Ähnliche Begriffe" ein.
+de:
+  PLUGIN_INGRID_GRAV:
+    DEBUG:
+      TITLE: Debug
+      HELP: Debug-Meldungen werden im grav.log ausgegeben.
+    INGRID_API:
+      TITLE: InGrid-API
+      URL: URL
+      URL_HELP: InGrid-API-URL eintragen
+      USER: Benutzer (htaccess)
+      USER_HELP: Benutzername zu InGrid-API. Per Docker-ENV "INGRID_API_USER" setzbar.
+      PASS: Passwort (htaccess)
+      PASS_HELP: Passwort zu Geo-API. Per Docker-ENV "INGRID_API_PASS" setzbar.
+    CSW:
+      TITLE: CSW
+      URL: Link zum Interface-CSW
+      URL_HELP: Trage Sie hier die URL zum Interface-CSW ein.
+    RDF:
+      TITLE: RDF
+      URL: Link zum Interface-RDF
+      URL_HELP: Trage Sie hier die URL zum Interface-RDF ein.
+    SNS:
+      SIMILAR_TERMS:
+        TITLE: SNS
+        URL: SNS-API - Ähnliche Begriffe
+        URL_HELP: Trage Sie hier die URL zur SNS-API für die "Ähnliche Begriffe" ein.

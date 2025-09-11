@@ -1,0 +1,13 @@
+enabled: true
+debug: false
+ingrid_api:
+  url: 'https://api.dev.informationgrid.eu'
+  user:
+  pass:
+csw:
+  url: 'https://dev.informationgrid.eu/csw?REQUEST=GetRecordById&SERVICE=CSW&VERSION=2.0.2&id='
+rdf:
+  url: null
+sns:
+  similar_terms:
+    url: 'https://sns.uba.de/umthes/de/similar.rdf?terms='

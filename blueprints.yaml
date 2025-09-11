@@ -1,0 +1,109 @@
+name: InGrid Grav
+slug: ingrid-grav
+type: plugin
+version: 0.1.0
+description: InGrid functions for GravCMS
+icon: plug
+author:
+  name: Khanh Toan Tran
+  email: khanh.toan.tran@wemove.com
+homepage: https://github.com/informationgrid/ingrid-grav-plugin
+demo: https://dev.informationgrid.eu
+keywords: grav, plugin, etc
+bugs: https://github.com/informationgrid/ingrid-grav-plugin/issues
+docs: https://github.com/informationgrid/ingrid-grav-plugin/blob/develop/README.md
+license: MIT
+
+dependencies:
+  - { name: grav, version: '>=1.6.0' }
+
+form:
+  validation: loose
+  fields:
+    enabled:
+      type: toggle
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
+      highlight: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
+    debug:
+      type: toggle
+      label: PLUGIN_INGRID_GRAV.DEBUG.TITLE
+      help: PLUGIN_INGRID_GRAV.DEBUG.HELP
+      highlight: 1
+      options:
+        1: PLUGIN_ADMIN.ENABLED
+        0: PLUGIN_ADMIN.DISABLED
+      validate:
+        type: bool
+
+    tabs:
+      type: tabs
+      active: 1
+      classes: side-tabs
+      fields:
+        tab_ingrid_api:
+          type: tab
+          title: PLUGIN_INGRID_GRAV.INGRID_API.TITLE
+          fields:
+            ingrid_api:
+              type: section
+              title: PLUGIN_INGRID_GRAV.INGRID_API.TITLE
+              underline: true
+            ingrid_api.url:
+              type: text
+              label: PLUGIN_INGRID_GRAV.INGRID_API.URL
+              help: PLUGIN_INGRID_GRAV.INGRID_API.URL_HELP
+            ingrid_api.user:
+              type: text
+              label: PLUGIN_INGRID_GRAV.INGRID_API.USER
+              help: PLUGIN_INGRID_GRAV.INGRID_API.USER_HELP
+            ingrid_api.pass:
+              type: text
+              label: PLUGIN_INGRID_GRAV.INGRID_API.PASS
+              help: PLUGIN_INGRID_GRAV.INGRID_API.PASS_HELP
+
+        tab_csw:
+          type: tab
+          title: PLUGIN_INGRID_GRAV.CSW.TITLE
+          fields:
+            csw:
+              type: section
+              title: PLUGIN_INGRID_GRAV.CSW.TITLE
+              underline: true
+            csw.url:
+              type: text
+              label: PLUGIN_INGRID_GRAV.CSW.URL
+              help: PLUGIN_INGRID_GRAV.CSW.URL_HELP
+
+        tab_rdf:
+          type: tab
+          title: PLUGIN_INGRID_GRAV.RDF.TITLE
+          fields:
+            rdf:
+              type: section
+              title: PLUGIN_INGRID_GRAV.RDF.TITLE
+              underline: true
+
+            rdf.url:
+              type: text
+              label: PLUGIN_INGRID_GRAV.RDF.URL
+              help: PLUGIN_INGRID_GRAV.RDF.URL_HELP
+
+        tab_sns:
+          type: tab
+          title: PLUGIN_INGRID_GRAV.SNS.SIMILAR_TERMS.TITLE
+          fields:
+            sns:
+              type: section
+              title: PLUGIN_INGRID_GRAV.SNS.SIMILAR_TERMS.TITLE
+              underline: true
+
+            sns.similar_terms.url:
+              type: text
+              label: PLUGIN_INGRID_GRAV.SNS.SIMILAR_TERMS.URL
+              help: PLUGIN_INGRID_GRAV.SNS.SIMILAR_TERMS.URL_HELP
