@@ -61,13 +61,14 @@ class InGridGravPlugin extends Plugin
 
         // Set proxy
         $systemProxy = $this->grav['config']->get('system.http.proxy');
-        $streamContext =  array(
-            'http' => array(
-                'timeout' => 30,
-                'proxy' => $systemProxy ? 'http://' . $systemProxy : '',
-            )
-        );
-        stream_context_set_default($streamContext);
+        if ($systemProxy) {
+            $streamContext = array(
+                'http' => array(
+                    'proxy' => 'http://' . $systemProxy,
+                )
+            );
+            stream_context_set_default($streamContext);
+        }
 
         $config = $this->config();
         $this->configApiUrl = $config['ingrid_api']['url'];
@@ -463,11 +464,13 @@ class InGridGravPlugin extends Plugin
     {
         $paramUrl = $this->grav['uri']->query('url') ?: "";
         try {
-            $headers = get_headers($paramUrl, true);
-            if (substr($headers[0], 9, 3) == 200) {
-                if (isset($headers['Content-Length'])) {
-                    $contentLength = $headers['Content-Length'];
-                    echo StringHelper::formatBytes($contentLength);
+            $headers = HttpHelper::getHeader($paramUrl);
+            if ($headers) {
+                if (substr($headers[0], 9, 3) == 200) {
+                    if (isset($headers['Content-Length'])) {
+                        $contentLength = $headers['Content-Length'];
+                        echo StringHelper::formatBytes($contentLength);
+                    }
                 }
             }
         } catch (\Exception $e) {
