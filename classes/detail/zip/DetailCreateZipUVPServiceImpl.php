@@ -146,7 +146,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                                         $label = IdfHelper::getNodeValue($link, './label');
 
                                         error_reporting(E_ALL & ~E_WARNING);
-                                        $headers = HttpHelper::getHeaders($url);
+                                        $headers = HttpHelper::getHeader($url);
                                         if ($headers) {
                                             if (substr($headers[0], 9, 3) == 200) {
                                                 $contentType = $headers['Content-Type'];
