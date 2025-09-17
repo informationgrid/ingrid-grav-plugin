@@ -198,7 +198,7 @@ class CatalogController
                         $this->addToList($catalogId);
                     }
                 }
-                $name = trim($isAddress ? implode(' ', array_reverse(explode(', ', $item['name']))) : $item['name']);
+                $name = $item['name'];
                 $name = explode('#locale-', $name)[0];
                 $node = [
                     'name' => $name,
