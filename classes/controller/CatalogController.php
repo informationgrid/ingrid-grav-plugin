@@ -13,6 +13,7 @@ class CatalogController
     public bool $configCatalogDisplayPartner;
     public bool $configCatalogOpenOnNewTab;
     public bool $configCatalogSortByName;
+    public bool $configCatalogAddressFolderClosed;
     public string $paramCatalogOpenNodes;
     public array $openCatalogNodes;
 
@@ -30,6 +31,7 @@ class CatalogController
         $this->configCatalogDisplayPartner = $catalogSetting['display_partner'] ?? true;
         $this->configCatalogOpenOnNewTab = $catalogSetting['open_on_new_tab'] ?? true;
         $this->configCatalogSortByName = $catalogSetting['sort_by_name'] ?? true;
+        $this->configCatalogAddressFolderClosed = $catalogSetting['address_folder_closed'] ?? true;
 
         $this->paramCatalogOpenNodes = $this->grav['uri']->query('openNodes') ?? "";
         $this->openCatalogNodes = [];
@@ -160,7 +162,9 @@ class CatalogController
         $typeId = $partner . '-' . substr(md5($catalogId . '-' . ($isAddress ? 'address' : 'object')), 0, 8);
         $isOpen = $this->checkIsCatalogNodeOpen($typeId, $typeLevel);
         if ($isOpen) {
-            $this->addToList($typeId);
+            if (!$isAddress or !$this->configCatalogAddressFolderClosed) {
+                $this->addToList($typeId);
+            }
         }
         $children = $this->getCatalogChildren($id, $this->configCatalogOpenNodesLevel, $partner, $catalogId . '-' . $typeId);
         $name = $isAddress ? 'CATALOG_HIERARCHY.TREE_ADDRESSES' : 'CATALOG_HIERARCHY.TREE_OBJECTS';
