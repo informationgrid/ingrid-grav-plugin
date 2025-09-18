@@ -578,43 +578,20 @@ class InGridGravPlugin extends Plugin
     {
         try {
             $detail = new DetailController($this->grav, $this->configApiUrl);
-            echo $detail->getContentZipOutput();
+            echo $detail->createContentZipOutput();
         } catch (\Exception $e) {
-            $this->grav['log']->error($e->getMessage());
+            $this->grav['log']->error('renderCustomTemplateDetailCreateZip: ' . $e->getMessage());
         }
         exit();
     }
 
     public function renderCustomTemplateDetailGetZip(): void
     {
-        $paramUuid = $this->grav['uri']->query('uuid');
-        $paramPlugId = $this->grav['uri']->query('plugid');
         try {
-            $locator = $this->grav['locator'];
-            $folderPath = $locator->findResource('user-data://', true);
-            $dir = $folderPath . '/downloads/zip/' . $paramPlugId . '/' . $paramUuid;
-            $dirFiles = scandir($dir);
-            $filename = '';
-            foreach ($dirFiles as $dirFile) {
-                if (str_ends_with($dirFile, '.zip')) {
-                    $filename = $dirFile;
-                }
-            }
-            // get current memory_limit
-            $memLimit = ini_get('memory_limit');
-            // set it to unlimit
-            ini_set('memory_limit', '-1');
-            $file = file($dir . '/' . $filename);
-            if ($file) {
-                header('Content-Type: application/zip');
-                header('Content-Length: ' . filesize($dir . '/' . $filename));
-                header('Content-Disposition: attachment; filename="' . $filename . '"');
-                readfile($dir . '/' . $filename);
-            }
-            // set memory_limit back
-            ini_set('memory_limit', $memLimit);
+            $detail = new DetailController($this->grav, $this->configApiUrl);
+            $detail->getContentZipOutput();
         } catch (\Exception $e) {
-            $this->grav['log']->error($paramUuid . ': ' .$e->getMessage());
+            $this->grav['log']->error('renderCustomTemplateDetailGetZip: ' . $e->getMessage());
         }
         exit();
     }

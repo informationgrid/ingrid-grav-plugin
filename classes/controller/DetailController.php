@@ -83,7 +83,7 @@ class DetailController
         }
     }
 
-    public function getContentZipOutput(): string
+    public function createContentZipOutput(): string
     {
         $output = '';
         $responseContent = $this->getResponseContent($this->configApi, $this->uuid, $this->type);
@@ -113,6 +113,31 @@ class DetailController
             }
         }
         return $output;
+    }
+
+    public function getContentZipOutput(): void {
+        $paramUuid = $this->grav['uri']->query('uuid');
+        $paramPlugId = $this->grav['uri']->query('plugid');
+        try {
+            $locator = $this->grav['locator'];
+            $folderPath = $locator->findResource('user-data://', true);
+            $dir = $folderPath . '/downloads/zip/' . $paramPlugId . '/' . $paramUuid;
+            $dirFiles = scandir($dir);
+            $filename = '';
+            foreach ($dirFiles as $dirFile) {
+                if (str_ends_with($dirFile, '.zip')) {
+                    $filename = $dirFile;
+                }
+            }
+            if (file_exists($dir . '/' . $filename)) {
+                header('Content-Type: application/zip');
+                header('Content-Length: ' . filesize($dir . '/' . $filename));
+                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                readfile($dir . '/' . $filename);
+            }
+        } catch (\Exception $e) {
+            $this->grav['log']->error($paramUuid . ': ' .$e->getMessage());
+        }
     }
 
     private function getResponseContent(string $api, string $uuid, string $type): ?string
