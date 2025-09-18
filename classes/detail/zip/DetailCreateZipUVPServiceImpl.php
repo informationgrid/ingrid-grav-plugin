@@ -3,6 +3,7 @@
 namespace Grav\Plugin;
 
 use Grav\Common\Grav;
+use Exception;
 
 class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
 {
@@ -35,16 +36,21 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
     public function parse(\SimpleXMLElement $content): ?array
     {
         if (!file_exists($this->filenameProcess)) {
-            if (!file_exists($this->filenameStats)) {
-                self::createStatsJson($content, $this->filenameStats);
-                self::createZip(json_decode(HttpHelper::getFileContent($this->filenameStats)));
-            } else {
-                self::createStatsJson($content, $this->filenameStatsUpdate);
-                [$addItems, $deleteItems] = self::compareStats($this->filenameStats, $this->filenameStatsUpdate);
-                self::updateZip([$addItems, $deleteItems]);
-                rename($this->filenameStatsUpdate, $this->filenameStats);
+            try {
+                if (!file_exists($this->filenameStats)) {
+                    self::createStatsJson($content, $this->filenameStats);
+                    self::createZip(json_decode(HttpHelper::getFileContent($this->filenameStats), true));
+                } else {
+                    self::createStatsJson($content, $this->filenameStatsUpdate);
+                    [$addItems, $deleteItems] = self::compareStats($this->filenameStats, $this->filenameStatsUpdate);
+                    self::updateZip([$addItems, $deleteItems]);
+                    rename($this->filenameStatsUpdate, $this->filenameStats);
+                }
+            } catch (Exception $e) {
+                $this->grav['log']->error('Error create ZIP: ' . $this->filenameStats . ' :' . $e->getMessage());
+            } finally {
+                unlink($this->filenameProcess);
             }
-            unlink($this->filenameProcess);
         }
         if (file_exists($this->filenameZip)) {
             $filesize = filesize($this->filenameZip);
@@ -59,7 +65,9 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
     {
         $statsItemsAdd = $statsItems[0];
         $statsItemsDel = $statsItems[0];
-        if (!empty($statsItemsAdd) or !empty($statsItemsDel)) {
+        if (!file_exists($this->filenameZip)) {
+            self::createZip(json_decode(HttpHelper::getFileContent($this->filenameStatsUpdate), true));
+        } else if (!empty($statsItemsAdd) or !empty($statsItemsDel)) {
             $zip = new \ZipArchive();
             if ($zip->open($this->filenameZip, \ZipArchive::CREATE)) {
                 foreach ($statsItemsDel as $stats) {
@@ -89,7 +97,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     $fileName = $stats['name'];
                     $filePath = $stats['path'];
                     $fileUrl = $stats['link'];
-                    if (($response = HttpHelper::getFileContent($fileUrl)) !== false) {
+                    if (($response = HttpHelper::getHttpFile($fileUrl)) !== false) {
                         $zip->addFromString($filePath . '/' . $fileName, $response);
                     }
                 }
