@@ -251,8 +251,7 @@ class SearchController
         }
         $query_string[] = http_build_query($query_params);
 
-        $base_url = $uri->path();
-        return $base_url . '?' . join('&', $query_string);
+        return '?' . join('&', $query_string);
     }
 
     private function getSelectedFacetsFromConfig(array &$facets, array &$params, ?string $parentId): void
