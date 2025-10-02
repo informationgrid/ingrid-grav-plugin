@@ -154,27 +154,31 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                                         $label = IdfHelper::getNodeValue($link, './label');
 
                                         error_reporting(E_ALL & ~E_WARNING);
-                                        $headers = HttpHelper::getHeader($url);
+                                        [$status, $headers] = HttpHelper::getHeader($url);
                                         if ($headers) {
-                                            if (substr($headers[0], 9, 3) == 200) {
-                                                $contentType = $headers['Content-Type'];
-                                                $extensionType = MimeTypeHelper::getMimetypeExtension($contentType);
-                                                if (empty($extensionType)) {
-                                                    $extensionType = '.html';
+                                            if ($status == 200) {
+                                                if (isset($headers['Content-Type']) &&
+                                                    $headers['Content-Length'] &&
+                                                    $headers['Last-Modified']) {
+                                                    $contentType = reset($headers['Content-Type']);
+                                                    $extensionType = MimeTypeHelper::getMimetypeExtension($contentType);
+                                                    if (empty($extensionType)) {
+                                                        $extensionType = '.html';
+                                                    }
+                                                    $contentLength = reset($headers['Content-Length']);
+                                                    $lastModified = reset($headers['Last-Modified']);
+                                                    $fileName = $label . '.' . $extensionType;
+                                                    $id = $stepFolder . '/' . $docFolder . '/' . $url . '/' . $fileName;
+                                                    $path = $stepFolder . '/' . $docFolder;
+                                                    $array[$id] = array(
+                                                        'length' => $contentLength,
+                                                        'link' => $url,
+                                                        'type' => $contentType,
+                                                        'modified' => $lastModified,
+                                                        'name' => $fileName,
+                                                        'path' => $path,
+                                                    );
                                                 }
-                                                $contentLength = $headers['Content-Length'];
-                                                $lastModified = $headers['Last-Modified'];
-                                                $fileName = $label . '.' . $extensionType;
-                                                $id = $stepFolder . '/' . $docFolder . '/' . $url . '/' . $fileName;
-                                                $path = $stepFolder . '/' . $docFolder;
-                                                $array[$id] = array(
-                                                    'length' => $contentLength,
-                                                    'link' => $url,
-                                                    'type' => $contentType,
-                                                    'modified' => $lastModified,
-                                                    'name' => $fileName,
-                                                    'path' => $path,
-                                                );
                                             }
                                         }
                                         error_reporting(E_ALL);

@@ -462,11 +462,11 @@ class InGridGravPlugin extends Plugin
     {
         $paramUrl = $this->grav['uri']->query('url') ?: "";
         try {
-            $headers = HttpHelper::getHeader($paramUrl);
+            [$status, $headers] = HttpHelper::getHeader($paramUrl);
             if ($headers) {
-                if (substr($headers[0], 9, 3) == 200) {
+                if ($status == 200) {
                     if (isset($headers['Content-Length'])) {
-                        $contentLength = $headers['Content-Length'];
+                        $contentLength = reset($headers['Content-Length']);
                         echo StringHelper::formatBytes($contentLength);
                     }
                 }
