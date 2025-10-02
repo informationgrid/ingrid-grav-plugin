@@ -144,10 +144,6 @@ class SearchResponseTransformerClassic
     private static function createActionUrl($uri, $facetConfigId, $key, array $facetConfig, bool $linkToSearch = false): string {
         $query_params = $uri->query(null, true);
 
-        // Get the full current URL without query parameters
-        $base_url = $uri->path();
-//        $search_term = $uri->post("q") ? "" : '&q=' . $uri->query("q");
-
         if ($linkToSearch) {
             $config = Grav::instance()['config'];
             $theme = $config->get('system.pages.theme');
@@ -277,7 +273,7 @@ class SearchResponseTransformerClassic
         $query_string[] = http_build_query($query_params);
 
         // Construct the new URL with the updated query string
-        return $base_url . '?' . join('&', $query_string);
+        return '?' . join('&', $query_string);
     }
 
     private static function parseHit($esHit, string $lang, string $theme): array
