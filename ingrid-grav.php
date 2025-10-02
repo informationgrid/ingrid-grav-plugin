@@ -85,9 +85,7 @@ class InGridGravPlugin extends Plugin
         $uri = $this->grav['uri'];
         $uri_path = $uri->path();
 
-        if ($this->config()['debug']) {
-            $this->grav['log']->debug('Incoming request URL on ingrid-grav plugin: ' . $uri_path);
-        }
+        DebugHelper::debug('Incoming request URL on ingrid-grav plugin: ' . $uri_path);
         // Get rest content
         switch ($uri_path) {
             case '/rest/getMimeType':
@@ -451,7 +449,7 @@ class InGridGravPlugin extends Plugin
                 $twig->twig_vars['datasources'] = $datasource->getAdminContent();
 
             } catch (\Exception $e) {
-                $this->grav['log']->error($e->getMessage());
+                DebugHelper::error($e->getMessage());
             }
         }
     }
@@ -474,7 +472,7 @@ class InGridGravPlugin extends Plugin
                 }
             }
         } catch (\Exception $e) {
-            $this->grav['log']->error('Error load file size for '. $paramUrl . ': ' . $e->getMessage());
+            DebugHelper::error('Error load file size for '. $paramUrl . ': ' . $e->getMessage());
         }
         exit();
     }
@@ -499,7 +497,7 @@ class InGridGravPlugin extends Plugin
                 echo $paramUrl;
             }
         } catch (\Exception $e) {
-            $this->grav['log']->error('Error load http image url redirect: ' . $e->getMessage());
+            DebugHelper::error('Error load http image url redirect: ' . $e->getMessage());
         }
         exit();
     }
@@ -520,7 +518,7 @@ class InGridGravPlugin extends Plugin
             ]);
             echo trim($output);
         } catch (\Exception $e) {
-            $this->grav['log']->error('Error load mime type: ' . $e->getMessage());
+            DebugHelper::error('Error load mime type: ' . $e->getMessage());
         }
         exit();
     }
@@ -550,7 +548,7 @@ class InGridGravPlugin extends Plugin
             $catalog = new CatalogController($this->grav, $this->configApiUrlCatalog);
             echo $catalog->getContentLeaf();
         } catch (\Exception $e) {
-            $this->grav['log']->error($e->getMessage());
+            DebugHelper::error($e->getMessage());
         }
         exit();
     }
@@ -565,7 +563,7 @@ class InGridGravPlugin extends Plugin
             $bwastr = new BwastrController($this->grav);
             echo $bwastr->getContent();
         } catch (\Exception $e) {
-            $this->grav['log']->error($e->getMessage());
+            DebugHelper::error($e->getMessage());
         }
         exit();
     }
@@ -580,7 +578,7 @@ class InGridGravPlugin extends Plugin
             $detail = new DetailController($this->grav, $this->configApiUrl);
             echo $detail->createContentZipOutput();
         } catch (\Exception $e) {
-            $this->grav['log']->error('renderCustomTemplateDetailCreateZip: ' . $e->getMessage());
+            DebugHelper::error('renderCustomTemplateDetailCreateZip: ' . $e->getMessage());
         }
         exit();
     }
@@ -591,7 +589,7 @@ class InGridGravPlugin extends Plugin
             $detail = new DetailController($this->grav, $this->configApiUrl);
             $detail->getContentZipOutput();
         } catch (\Exception $e) {
-            $this->grav['log']->error('renderCustomTemplateDetailGetZip: ' . $e->getMessage());
+            DebugHelper::error('renderCustomTemplateDetailGetZip: ' . $e->getMessage());
         }
         exit();
     }
@@ -732,7 +730,7 @@ class InGridGravPlugin extends Plugin
                 $output = $search->getContentMapMarkers();
                 echo json_encode($output);
             } catch (\Exception $e) {
-                $this->grav['log']->error($e->getMessage());
+                DebugHelper::error($e->getMessage());
             }
         }
         exit;
@@ -746,7 +744,7 @@ class InGridGravPlugin extends Plugin
                 $output = $search->getContentSearchMarkers();
                 echo json_encode($output);
             } catch (\Exception $e) {
-                $this->grav['log']->error($e->getMessage());
+                DebugHelper::error($e->getMessage());
             }
         }
         exit;

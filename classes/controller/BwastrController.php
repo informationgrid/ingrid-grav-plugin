@@ -36,7 +36,7 @@ class BwastrController
 
         if (intval($id) and intval($id) < $this->limit) {
             if (empty($from) and empty($to)) {
-                if (($response = HttpHelper::getFileContent($this->urlInfo . $id)) !== false) {
+                if (($response = HttpHelper::getHttpContent($this->urlInfo . $id)) !== false) {
                     $info = json_decode($response, true);
                     $result = $info['result'];
                     foreach ($result as $item) {

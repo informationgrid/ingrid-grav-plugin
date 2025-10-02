@@ -1,5 +1,4 @@
 enabled: true
-debug: false
 ingrid_api:
   url: 'https://api.dev.informationgrid.eu'
   user:

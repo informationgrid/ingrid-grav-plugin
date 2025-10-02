@@ -25,8 +25,6 @@ class DetailController
     {
         $this->grav = $grav;
         $this->configApi = $api;
-        $this->log = $grav['log'];
-        $this->isDebug = $grav['config']->get('plugins.ingrid-grav.debug');
         $this->lang = $grav['language']->getLanguage();
         $this->uuid = $this->grav['uri']->query('docuuid') ?? '';
         $this->type = $this->grav['uri']->query('isAddress') ? 'address' : 'metadata';
@@ -61,9 +59,9 @@ class DetailController
             }
         } else if ($this->cswUrl) {
             try {
-                $response = HttpHelper::getFileContent($this->cswUrl);
+                $response = HttpHelper::getHttpContent($this->cswUrl);
             } catch (\Exception $e) {
-                $this->log->error('Error loading detail with cswUrl "' . $this->cswUrl . '": ' . $e->getMessage());
+                DebugHelper::error('Error loading detail with cswUrl "' . $this->cswUrl . '": ' . $e->getMessage());
             }
         }
 
@@ -136,7 +134,7 @@ class DetailController
                 readfile($dir . '/' . $filename);
             }
         } catch (\Exception $e) {
-            $this->grav['log']->error($paramUuid . ': ' .$e->getMessage());
+            DebugHelper::error($paramUuid . ': ' .$e->getMessage());
         }
     }
 
@@ -148,7 +146,7 @@ class DetailController
                 'body' => $this->transformQuery($uuid, $type)
             ])->getBody()->getContents();
         } catch (\Exception $e) {
-            $this->log->error('Error loading detail with uuid "' . $uuid . '": ' . $e->getMessage());
+            DebugHelper::error('Error loading detail with uuid "' . $uuid . '": ' . $e->getMessage());
         }
         return null;
     }
@@ -190,9 +188,7 @@ class DetailController
             "fields" => $requestedFields,
             "_source" => $source
         ));
-        if ($this->isDebug) {
-            $this->log->debug('Elasticsearch query detail: ' . $query);
-        }
+        DebugHelper::debug('Elasticsearch query detail: ' . $query);
         return $query;
     }
 

@@ -9,8 +9,6 @@ use PHPUnit\Framework\Exception;
 class SimilarTermsController
 {
     public Grav $grav;
-    public $log;
-    public bool $isDebug;
     public string $configApi;
     public string $query;
     public string $lang;
@@ -19,8 +17,6 @@ class SimilarTermsController
     public function __construct(Grav $grav, string $api)
     {
         $this->grav = $grav;
-        $this->log = $grav['log'];
-        $this->isDebug = $grav['config']->get('plugins.ingrid-grav.debug');
         $this->configApi = $api;
         $this->lang = $grav['language']->getLanguage();
         $this->query = $this->grav['uri']->query('q') ?? "";
@@ -43,10 +39,8 @@ class SimilarTermsController
         if (empty($items)) {
             $similarSynonymUrl = $this->configApi . implode(',', $queries) . '&synonyms_only=1';
             $similarSynonymUrl = str_replace('similar.rdf', 'similar.json', $similarSynonymUrl);
-            if ($this->isDebug) {
-                $this->log->debug('Search synonyms_only similar terms with: ' . $similarSynonymUrl);
-            }
-            if (($similarSynonymsResponse = HttpHelper::getFileContent($similarSynonymUrl)) !== false) {
+            DebugHelper::debug('Search synonyms_only similar terms with: ' . $similarSynonymUrl);
+            if (($similarSynonymsResponse = HttpHelper::getHttpContent($similarSynonymUrl)) !== false) {
                 $synonyms = json_decode($similarSynonymsResponse);
                 if (isset($synonyms->results)) {
                     foreach ($synonyms->results as $synonym) {
@@ -54,17 +48,15 @@ class SimilarTermsController
                         $found = array_search(strtolower($synonym), array_map('strtolower', $queries));
                         if ($found !== false) {
                             $similarUrl = $this->configApi . $synonym;
-                            if ($this->isDebug) {
-                                $this->log->debug('Search similar terms with: ' . $similarUrl);
-                            }
-                            if (($response = HttpHelper::getFileContent($similarUrl)) !== false) {
+                            DebugHelper::debug('Search similar terms with: ' . $similarUrl);
+                            if (($response = HttpHelper::getHttpContent($similarUrl)) !== false) {
                                 $content = simplexml_load_string($response);
                                 $labels = RdfHelper::getNodeValueList($content, '//skos:altLabel[@xml:lang="' . $this->lang . '"]');
                                 foreach ($labels as $label) {
                                     $item['chk_' . substr(md5($synonym . $label), 0, 6)] = $label;
                                 }
                             } else {
-                                $this->log->error('Search similar terms with: ' . $similarUrl);
+                                DebugHelper::error('Search similar terms with: ' . $similarUrl);
                             }
                         }
                         if (!empty($item)) {
@@ -76,12 +68,10 @@ class SimilarTermsController
                     $cache->save($cacheId, $items);
                 }
             } else {
-                $this->log->error('Search synonyms_only similar terms with: ' . $similarSynonymUrl);
+                DebugHelper::error('Search synonyms_only similar terms with: ' . $similarSynonymUrl);
             }
         } else {
-            if ($this->isDebug) {
-                $this->log->debug('Get search similar terms from cache.');
-            }
+            DebugHelper::debug('Get search similar terms from cache.');
         }
         return $items;
     }

@@ -23,7 +23,7 @@ class DatasourceController
     {
         $list = array();
 
-        if (($response = HttpHelper::getFileContent($this->configApi)) !== false) {
+        if (($response = HttpHelper::getHttpContent($this->configApi)) !== false) {
             $items = json_decode($response, true);
             foreach ($items as $item) {
                 if (array_key_exists('name', $item)) {
@@ -45,7 +45,7 @@ class DatasourceController
     {
         $list = array();
 
-        if (($response = HttpHelper::getFileContent($this->configApi)) !== false) {
+        if (($response = HttpHelper::getHttpContent($this->configApi)) !== false) {
             $items = json_decode($response, true);
             foreach ($items as $item) {
                 if (array_key_exists('name', $item)) {

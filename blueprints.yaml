@@ -30,17 +30,6 @@ form:
       validate:
         type: bool
 
-    debug:
-      type: toggle
-      label: PLUGIN_INGRID_GRAV.DEBUG.TITLE
-      help: PLUGIN_INGRID_GRAV.DEBUG.HELP
-      highlight: 1
-      options:
-        1: PLUGIN_ADMIN.ENABLED
-        0: PLUGIN_ADMIN.DISABLED
-      validate:
-        type: bool
-
     tabs:
       type: tabs
       active: 1

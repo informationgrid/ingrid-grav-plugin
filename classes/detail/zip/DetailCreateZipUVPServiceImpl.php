@@ -47,7 +47,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     rename($this->filenameStatsUpdate, $this->filenameStats);
                 }
             } catch (Exception $e) {
-                $this->grav['log']->error('Error create ZIP: ' . $this->filenameStats . ' :' . $e->getMessage());
+                DebugHelper::error('Error create ZIP: ' . $this->filenameStats . ' :' . $e->getMessage());
             } finally {
                 unlink($this->filenameProcess);
             }
@@ -79,7 +79,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     $fileName = $stats['name'];
                     $filePath = $stats['path'];
                     $fileUrl = $stats['link'];
-                    if (($response = HttpHelper::getFileContent($fileUrl)) !== false) {
+                    if (($response = HttpHelper::getHttpContent($fileUrl)) !== false) {
                         $zip->addFromString($filePath . '/' . $fileName, $response);
                     }
                 }
