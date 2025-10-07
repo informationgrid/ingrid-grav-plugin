@@ -89,16 +89,19 @@ class InGridGravPlugin extends Plugin
         // Get rest content
         switch ($uri_path) {
             case '/rest/getMimeType':
+                session_write_close();
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateMimetype', 0],
                 ]);
                 break;
             case '/rest/getUrlFileSize':
+                session_write_close();
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateUrlFileSize', 0],
                 ]);
                 break;
             case '/rest/getUrlHttpImage':
+                session_write_close();
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateUrlHttpImage', 0],
                 ]);
@@ -106,32 +109,38 @@ class InGridGravPlugin extends Plugin
 
             case '/rest/createDetailZip':
                 // Create zip request
+                session_write_close();
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateDetailCreateZip', 0],
                 ]);
                 break;
             case '/rest/getDetailZip':
                 // Get zip request
+                session_write_close();
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateDetailGetZip', 0],
                 ]);
                 break;
             case '/rest/getMapMarkers':
+                session_write_close();
                 $this->enable([
                     'onTwigSiteVariables' => ['onTwigSiteVariablesMapMarkers', 0],
                 ]);
                 break;
             case '/rest/getSearchMarkers':
+                session_write_close();
                 $this->enable([
                     'onTwigSiteVariables' => ['onTwigSiteVariablesSearchMarkers', 0],
                 ]);
                 break;
             case '/rest/getCatalogLeaf':
+                session_write_close();
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateCatalog', 0],
                 ]);
                 break;
             case '/rest/getBwastrs':
+                session_write_close();
                 $this->enable([
                     'onPageInitialized' => ['renderCustomTemplateBwastrs', 0],
                 ]);
