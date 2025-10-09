@@ -2,8 +2,8 @@
 
 namespace Grav\Plugin;
 
+use Collator;
 use Grav\Common\Grav;
-use PHPUnit\Framework\Exception;
 
 class CatalogController
 {
@@ -90,7 +90,11 @@ class CatalogController
                     }
                 }
                 if ($this->configCatalogSortByName) {
-                    usort($providerList, array($this, 'compare_name'));
+                    $collator = new Collator($this->lang);
+                    $compareFunction = function($a, $b) use ($collator) {
+                        return $collator->compare($a['name'], $b['name']);
+                    };
+                    usort($providerList, $compareFunction);
                 }
                 $newPartner['children'] = $providerList;
                 if (!empty($providerList) && $isPartnerOpen) {
@@ -99,7 +103,11 @@ class CatalogController
                 $list[] = $newPartner;
             }
             if ($this->configCatalogSortByName) {
-                usort($list, array($this, 'compare_name'));
+                $collator = new Collator($this->lang);
+                $compareFunction = function($a, $b) use ($collator) {
+                    return $collator->compare($a['name'], $b['name']);
+                };
+                usort($list, $compareFunction);
             }
         }
 
@@ -224,7 +232,11 @@ class CatalogController
                 }
             }
             if ($this->configCatalogSortByName) {
-                usort($list, array($this, 'compare_name'));
+                $collator = new Collator($this->lang);
+                $compareFunction = function($a, $b) use ($collator) {
+                    return $collator->compare($a['name'], $b['name']);
+                };
+                usort($list, $compareFunction);
             }
 
             // Free addresses IGE-NG
@@ -241,7 +253,11 @@ class CatalogController
                 if ($isOpen) {
                     $this->addToList($freeAddressId);
                 }
-                usort($freeAddresses, array($this, 'compare_name'));
+                $collator = new Collator($this->lang);
+                $compareFunction = function($a, $b) use ($collator) {
+                    return $collator->compare($a['name'], $b['name']);
+                };
+                usort($freeAddresses, $compareFunction);
                 array_unshift($list, [
                     'name' => 'CATALOG_HIERARCHY.TREE_ADDRESSES_FREE',
                     'level' => $level + 1,
