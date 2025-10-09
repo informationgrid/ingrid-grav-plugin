@@ -248,8 +248,9 @@ class SearchResultParserClassicISO
                     }
                     if (count($referingObjRefType) > $count) {
                         $referenceAllServiceType[] = $referingObjRefType[$count];
-                        if (!in_array($referingObjRefType[$count], $serviceTypes)) {
-                            $serviceTypes[] = $referingObjRefType[$count];
+                        $tmpObjRefVersion = $referingObjRefVersion[$count];
+                        if (!in_array($tmpObjRefVersion, $serviceTypes)) {
+                            $serviceTypes[] = CapabilitiesHelper::extractServiceFromServiceTypeVersion($tmpObjRefVersion) ?: $tmpObjRefVersion;
                         }
                     } else {
                         $referenceAllServiceType[] = "";
@@ -331,7 +332,7 @@ class SearchResultParserClassicISO
                     $array[] = [
                         "url" => $url,
                         "title" => !empty($urlReferenceContent[$count]) ? $urlReferenceContent[$count] : $url,
-                        "serviceType" => $format == "9900" && count($urlReferenceDatatype) > $count ? $urlReferenceDatatype[$count] : "",
+                        "serviceType" => $format == "9990" && count($urlReferenceDatatype) > $count ? $urlReferenceDatatype[$count] : "",
                         "type" => $format == "3600" ? "1" : null,
                         "typeName" => $format == "3600" ? CodelistHelper::getCodelistEntry('8000', '1', 'de') : null,
                         "kind" => "other_exclude_regulation",
