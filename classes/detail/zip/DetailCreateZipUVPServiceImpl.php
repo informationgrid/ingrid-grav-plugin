@@ -64,7 +64,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
     private function updateZip(array $statsItems): void
     {
         $statsItemsAdd = $statsItems[0];
-        $statsItemsDel = $statsItems[0];
+        $statsItemsDel = $statsItems[1];
         if (!file_exists($this->filenameZip)) {
             self::createZip(json_decode(HttpHelper::getFileContent($this->filenameStatsUpdate), true));
         } else if (!empty($statsItemsAdd) or !empty($statsItemsDel)) {
@@ -110,7 +110,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
         $itemsJson = json_decode(HttpHelper::getFileContent($filenameStats), true);
         $itemsUpdateJson = json_decode(HttpHelper::getFileContent($filenameStatsUpdate), true);
         foreach ($itemsUpdateJson as $key => $item) {
-            if ($itemsJson[$key]) {
+            if (isset($itemsJson[$key])) {
                 $result_array = array_diff($item, $itemsJson[$key]);
                 if (empty($result_array[0])) {
                     unset($itemsUpdateJson[$key]);
