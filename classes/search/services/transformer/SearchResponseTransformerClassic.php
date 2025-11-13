@@ -185,10 +185,7 @@ class SearchResponseTransformerClassic
                         $query_params[$facetConfigId] = $key;
                     }
                 } else {
-                    $valueAsArray = [];
-                    if (!empty($query_params[$facetConfigId])) {
-                        $valueAsArray = explode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $query_params[$facetConfigId]);
-                    }
+                    $valueAsArray = explode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $query_params[$facetConfigId]);
                     $found = array_search($key, $valueAsArray);
                     if ($found !== false) {
                         array_splice($valueAsArray, $found, 1);
