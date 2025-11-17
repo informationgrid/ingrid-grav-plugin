@@ -145,6 +145,12 @@ class InGridGravPlugin extends Plugin
                     'onPageInitialized' => ['renderCustomTemplateBwastrs', 0],
                 ]);
                 break;
+            case '/rest/downloadCSV':
+                session_write_close();
+                $this->enable([
+                    'onPageInitialized' => ['renderCustomTemplateDownloadCSV', 0],
+                ]);
+                break;
             default:
                 // Get page content
                 $this->enable([
@@ -575,6 +581,25 @@ class InGridGravPlugin extends Plugin
             DebugHelper::error($e->getMessage());
         }
         exit();
+    }
+
+    /*
+     * REST: Download search result as CSV
+    */
+
+    public function renderCustomTemplateDownloadCSV(): void
+    {
+        if (!$this->isAdmin()) {
+            try {
+                $search = new SearchController($this->grav, $this->configApiUrl);
+                $output = [];
+                $search->getContentDownloadCSV($output);
+                echo json_encode($output);
+            } catch (\Exception $e) {
+                DebugHelper::error($e->getMessage());
+            }
+        }
+        exit;
     }
 
     /*

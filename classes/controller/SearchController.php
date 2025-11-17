@@ -121,6 +121,33 @@ class SearchController
         return $output;
     }
 
+    public function getContentDownloadCSV(array &$output)
+    {
+
+        $searchSettings = $this->grav['config']->get('themes.' . $this->theme . '.hit_search') ?: [];
+        $facetConfig = $searchSettings['facet_config'] ?? [];
+        $this->selectedFacets = $this->getSelectedFacets($facetConfig);
+
+        $searchSettings['hits_num'] = 100;
+        $requestedFields = $_POST['requestedFields'];
+        $codelists = $_POST['codelists'];
+        $this->query = $_POST['query'] ?? '';
+        if (!empty($requestedFields)) {
+            $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $facetConfig, $searchSettings);
+            $page = 0;
+            $doSearch = true;
+            while ($doSearch) {
+                $page = $page + 1;
+                $hits = $service->getSearchResultsUnparsed($this->query, $page, $this->selectedFacets);
+                if ($hits) {
+                    $this->getSearchResultDownloadWithRequestedFields($hits, $requestedFields, $codelists, $this->lang, $output);
+                } else {
+                    $doSearch = false;
+                }
+            }
+        }
+        return $output;
+    }
     private function addFacetsBySelection(array &$facetConfig): void
     {
         $queryParams = $this->grav['uri']->query(null, true);
@@ -385,6 +412,31 @@ class SearchController
             $items[] = $item;
         }
         return $items;
+    }
+
+    private function getSearchResultDownloadWithRequestedFields(array $hits, array $requestedFields, array $codelists, string $lang, array &$items)
+    {
+        foreach ($hits as $hit) {
+            $source = $hit->_source;
+            $item = [];
+            foreach ($requestedFields as $field) {
+                if (property_exists($source, $field)) {
+                    $value = $source->$field;
+                    if ($codelists) {
+                        if (isset($codelists[$field])) {
+                            $tmpValue = CodelistHelper::getCodelistEntry($codelists[$field], $value , $lang);
+                            if ($tmpValue) {
+                                $value = $tmpValue;
+                            }
+                        }
+                    }
+                    $item[$field] = $value;
+                }
+            }
+            if (!empty($item)) {
+                $items[] = $item;
+            }
+        }
     }
 
     public function isSortHitsEnable(): bool
