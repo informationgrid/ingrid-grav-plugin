@@ -91,7 +91,7 @@ class SearchResultParserClassicISO
             "isOpendata" => !($isOpendata == "N"),
             "hasAccessConstraint" => !($hasAccessConstraint == "N"),
             "isHVD" => ElasticsearchHelper::getValue($esHit, "is_hvd") ?? false,
-            "obj_serv_type" => $obj_serv_type,
+            "obj_serv_type" => $obj_serv_type ? CodelistHelper::getCodelistEntryByIso('5100', $obj_serv_type, $lang) : null,
             "mapUrl" => $capUrl ? CapabilitiesHelper::getMapUrl($capUrl, $servTypeVersion, $servType) : null,
             "mapUrlClient" => ElasticsearchHelper::getFirstValue($esHit, "capabilities_url_with_client"),
             "wkts" => ElasticsearchHelper::getValueArray($esHit, "wkt_geo_text"),
