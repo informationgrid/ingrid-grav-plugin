@@ -64,6 +64,7 @@ class SearchResultParserClassicISO
         }
         $obj_serv_type = $servType;
         $capUrl = ElasticsearchHelper::getFirstValue($esHit, "capabilities_url");
+        $datasource_uuid = ElasticsearchHelper::getValue($esHit, "t011_obj_geo.datasource_uuid");
         return [
             "uuid" => $uuid,
             "type" => $type,
@@ -92,7 +93,7 @@ class SearchResultParserClassicISO
             "hasAccessConstraint" => !($hasAccessConstraint == "N"),
             "isHVD" => ElasticsearchHelper::getValue($esHit, "is_hvd") ?? false,
             "obj_serv_type" => $obj_serv_type ? CodelistHelper::getCodelistEntryByIso('5100', $obj_serv_type, $lang) : null,
-            "mapUrl" => $capUrl ? CapabilitiesHelper::getMapUrl($capUrl, $servTypeVersion, $servType) : null,
+            "mapUrl" => $capUrl ? CapabilitiesHelper::getMapUrl($capUrl, $servTypeVersion, $servType, $datasource_uuid) : null,
             "mapUrlClient" => ElasticsearchHelper::getFirstValue($esHit, "capabilities_url_with_client"),
             "wkts" => ElasticsearchHelper::getValueArray($esHit, "wkt_geo_text"),
             "y1" => ElasticsearchHelper::getValueArray($esHit, "y1"),
