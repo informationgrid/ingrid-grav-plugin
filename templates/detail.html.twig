@@ -27,7 +27,11 @@
         {% elseif detail_type == "address" %}
             {% include 'partials/detail/address/detail_address.html.twig' %}
         {% elseif detail_type == "metadata" %}
-            {% include 'partials/detail/metadata/detail_metadata.html.twig' %}
+            {% if hit.metadata %}
+                {% include 'partials/detail/opendata/detail_opendata.html.twig' %}
+            {% else %}
+                {% include 'partials/detail/metadata/detail_metadata.html.twig' %}
+            {% endif %}
         {% else %}
             {{ default_macros.render_error_msg("Keine Detailinformationen verfügbar.") }}
         {% endif %}
