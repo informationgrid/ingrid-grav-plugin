@@ -83,6 +83,7 @@ class InGridGravTwigExtension extends GravExtension
     {
         return [
             new \Twig_SimpleFilter('filterLinks', [$this, 'filterLinksByKind']),
+            new \Twig_SimpleFilter('filterByKey', [$this, 'filterArrayByKey']),
             new \Twig_SimpleFilter('sortContacts', [$this, 'sortContactsByRole']),
             new \Twig_SimpleFilter('inArrayLowerCase', [$this, 'inArrayLowerCase']),
             new \Twig_SimpleFilter('sortIgnoreCase', [$this, 'sortIgnoreCase']),
@@ -106,6 +107,17 @@ class InGridGravTwigExtension extends GravExtension
         if ($links) {
             $output = array_filter($links, function($v) use ($kind) {
                 return $v["kind"] == $kind;
+            });
+        }
+        return $output;
+    }
+
+    public function filterArrayByKey(array $array, string $key, string $kind): array
+    {
+        $output = [];
+        if ($array) {
+            $output = array_filter($array, function($v) use ($key, $kind) {
+                return $v->$key == $kind;
             });
         }
         return $output;

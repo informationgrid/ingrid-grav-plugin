@@ -190,11 +190,18 @@ class SearchHitParserOpendata
             $term = $item->term ?? '';
             $id = $item->id ?? '';
             $source = $item->source ?? '';
-            $array[] = new SearchHitOpendataKeyword(
-                $term,
-                $id,
-                $source,
-            );
+            $key = '';
+            if (!empty($term) && !empty($source)) {
+                if (!empty($id) && $source === "THEMES") {
+                    $key = CodelistHelper::getCodelistEntryData('6400', $id);
+                }
+                $array[] = new SearchHitOpendataKeyword(
+                    $term,
+                    $id,
+                    $source,
+                    $key,
+                );
+            }
         }
         return $array;
     }

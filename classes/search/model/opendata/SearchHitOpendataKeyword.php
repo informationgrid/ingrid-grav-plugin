@@ -8,6 +8,7 @@ readonly class SearchHitOpendataKeyword {
         public string $term,
         public string $id,
         public string $source,
+        public ?string $key,
     )
     {
     }
