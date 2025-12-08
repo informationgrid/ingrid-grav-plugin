@@ -100,7 +100,7 @@ class SearchHitParserOpendata
             $array[] = new SearchHitOpendataContact(
                 '',
                 $role,
-                CodelistHelper::getCodelistEntryByIso('505', $role, $lang) ?? $role,
+                CodelistHelper::getCodelistEntry('505', $role, $lang) ?? $role,
                 $name,
                 $communications,
                 $street,
