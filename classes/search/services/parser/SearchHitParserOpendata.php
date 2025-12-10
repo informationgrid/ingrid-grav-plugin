@@ -148,7 +148,9 @@ class SearchHitParserOpendata
             $landing_page = ElasticsearchHelper::getValue($esHit, 'dcat.landingPage') ?? '';
             if (!empty($landing_page)) {
                 return new SearchHitOpendataDCAT(
-                    $landing_page
+                    $landing_page,
+                    null,
+                    null
                 );
             }
         }
