@@ -4,9 +4,11 @@
     <div class="search-filtered row content-small">
         <div class="columns">
             <h4>{{ "DATASOURCE.CONNECTED_DATABASES"|t }}:</h4>
+            <div class="link-list">
             {% for plug in plugs %}
                 <p>{{ plug }}</p>
             {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock %}
