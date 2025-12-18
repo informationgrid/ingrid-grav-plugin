@@ -80,7 +80,7 @@ class SearchResponseTransformerClassic
                 foreach ($buckets as $bucket) {
                     $key = $bucket->key;
                     if (isset($key)) {
-                        $label = strtoupper('FACETS.' . $facetConfig['id'] . '.' . $key);
+                        $label = str_contains($key, ' ') ? $key : strtoupper('FACETS.' . $facetConfig['id'] . '.' . $key);
                         if (isset($facetConfig['codelist'])) {
                             $codelistValue = CodelistHelper::getCodelistEntryByIdent([$facetConfig['codelist']], $key, $lang);
                             if ($codelistValue) {
