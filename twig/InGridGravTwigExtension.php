@@ -111,7 +111,7 @@ class InGridGravTwigExtension extends GravExtension
         return $output;
     }
 
-    public function sortContactsByRole(array $contacts, array $sortList): array
+    public function sortContactsByRole(array $contacts, ?array $sortList): array
     {
         $array = [];
         if ($contacts && $sortList) {
@@ -134,6 +134,8 @@ class InGridGravTwigExtension extends GravExtension
                     }
                 }
             }
+        } else {
+            return $contacts;
         }
         return $array;
     }
