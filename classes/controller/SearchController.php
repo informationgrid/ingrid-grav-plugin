@@ -277,6 +277,16 @@ class SearchController
                         unset($query_params[$facet['toggle']['id']]);
                     }
                 }
+                if (isset($query_params[$facet['id']]) and !empty($query_params[$facet['id']])) {
+                    if (isset($this->results->facets)) {
+                        foreach ($this->results->facets as $resultFacet) {
+                            if ($resultFacet->id == $facet['id']) {
+                                unset($query_params[$facet['id']]);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
         $query_string[] = http_build_query($query_params);
