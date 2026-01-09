@@ -78,8 +78,8 @@ class DetailController
                 $parser = new DetailMetadata($this->theme);
                 $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
                 if ($this->hit) {
-                    if (isset($this->hit->langCode) && $this->hit->langCode == 'eng') {
-                        $this->lang = 'en';
+                    if (isset($this->hit->langCode) && $this->hit->langCode == 'en') {
+                        $this->lang = $this->hit->langCode;
                     }
                 }
             }
