@@ -104,6 +104,7 @@ class SearchResultParserClassicISO
             "bwastrs" => self::getBwaStrs($esHit),
             "bawauftragsnummer" => ElasticsearchHelper::getValue($esHit, "bawauftragsnummer"),
             "bawauftragstitel" => ElasticsearchHelper::getValue($esHit, "bawauftragstitel"),
+            "data_category" => ElasticsearchHelper::getValue($esHit, "data_category"),
             "citation" => ElasticsearchHelper::getValue($esHit, "additional_html_citation_quote"),
             "folderNames" => ElasticsearchHelper::getValue($esHit, "object_node.tree_path.name")
         ];
