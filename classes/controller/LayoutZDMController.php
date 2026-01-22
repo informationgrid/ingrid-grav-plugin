@@ -44,7 +44,6 @@ class LayoutZDMController
                     $ingridHead .= '<link rel="stylesheet" href="user/themes/itzbund_zdm/css/measure.css" type="text/css">';
                 }
                 $response = str_replace('  </head>', $ingridHead . '  </head>', $response);
-                $response = str_replace('  </head>', $ingridHead . '  </head>', $response);
                 if ($title) {
                     $response = str_replace('<title>ZDM  -   </title>', '<title>' . $title . ' - ZDM</title>', $response);
                 } else {
