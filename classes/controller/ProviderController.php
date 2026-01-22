@@ -23,7 +23,7 @@ class ProviderController
         if ($this->query) {
             $searchSettings = $this->grav['config']->get('themes.' . $this->theme . '.provider') ?? [];
             $service = new SearchServiceImpl($this->grav, $this->grav['uri'], [], $searchSettings);
-            $results = $service->getSearchResultsUnparsed($this->query, 1, []);
+            [$results, $facets] = $service->getSearchResultsUnparsed($this->query, 1, [], $this->grav['uri'], $this->lang);
             return $this->getPartners($results);
         } else {
             return CodelistHelper::getCodelistPartnerProviders();

@@ -32,6 +32,7 @@ class CatalogController
         $this->configCatalogOpenOnNewTab = $catalogSetting['open_on_new_tab'] ?? true;
         $this->configCatalogSortByName = $catalogSetting['sort_by_name'] ?? true;
         $this->configCatalogAddressFolderClosed = $catalogSetting['address_folder_closed'] ?? true;
+        $this->configCatalogAddressFolderHidden = $catalogSetting['address_folder_hidden'] ?? false;
 
         $this->paramCatalogOpenNodes = $this->grav['uri']->query('openNodes') ?? "";
         $this->openCatalogNodes = [];
@@ -166,6 +167,9 @@ class CatalogController
 
     private function getTypeNode(bool $isAddress, string $id, string $partner, string $catalogId): array
     {
+        if ($isAddress && $this->configCatalogAddressFolderHidden) {
+            return [];
+        }
         $typeLevel  = 3;
         $typeId = $partner . '-' . substr(md5($catalogId . '-' . ($isAddress ? 'address' : 'object')), 0, 8);
         $isOpen = $this->checkIsCatalogNodeOpen($typeId, $typeLevel);

@@ -19,6 +19,7 @@ class SearchController
     public int $hitsNum;
     public string $ranking;
     public int $page;
+    public array $facetConfig;
 
     public function __construct(Grav $grav, string $api)
     {
@@ -43,7 +44,7 @@ class SearchController
 
         // Theme config
         $searchSettings = $this->grav['config']->get('themes.' . $this->theme . '.hit_search') ?? [];
-        $facetConfig = $searchSettings['facet_config'] ?? [];
+        $this->facetConfig = $searchSettings['facet_config'] ?? [];
         $this->hitsNum = $searchSettings['hits_num'] ?? 0;
 
         if (empty($query)) {
@@ -60,9 +61,10 @@ class SearchController
             }
         }
 
-        $this->addFacetsBySelection($facetConfig);
-        $this->selectedFacets = $this->getSelectedFacets($facetConfig);
-        $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $facetConfig, $searchSettings);
+        $this->addFacetCatalog($this->facetConfig);
+        $this->addFacetsBySelection($this->facetConfig);
+        $this->selectedFacets = $this->getSelectedFacets($this->facetConfig);
+        $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $this->facetConfig, $searchSettings);
         $this->results = $service->getSearchResults($this->query,
             $this->page,
             $this->selectedFacets,
@@ -98,7 +100,7 @@ class SearchController
             $this->selectedFacets = $this->getSelectedFacets($facetConfig);
 
             $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $facetConfig, $searchSettings);
-            $hits = $service->getSearchResultsUnparsed('', $this->page, $this->selectedFacets);
+            [$hits, $facets] = $service->getSearchResultsUnparsed('', $this->page, $this->selectedFacets, $this->grav['uri'], $this->lang);
             if ($hits) {
                 $output = $this->getMapMarkers($hits);
             }
@@ -119,7 +121,7 @@ class SearchController
 
             $searchSettings['hits_num'] = 100;
             $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $facetConfig, $searchSettings);
-            $hits = $service->getSearchResultsUnparsed($this->query ?? '', $this->page, $this->selectedFacets);
+            [$hits, $facets] = $service->getSearchResultsUnparsed($this->query ?? '', $this->page, $this->selectedFacets, $this->grav['uri'], $this->lang);
             if ($hits) {
                 $output = $this->getMapMarkers($hits);
             }
@@ -131,22 +133,23 @@ class SearchController
     {
 
         $searchSettings = $this->grav['config']->get('themes.' . $this->theme . '.hit_search') ?: [];
-        $facetConfig = $searchSettings['facet_config'] ?? [];
-        $this->selectedFacets = $this->getSelectedFacets($facetConfig);
+        $this->facetConfig = $this->facetConfig ?? $searchSettings['facet_config'];
+        $this->addFacetCatalog($this->facetConfig);
+        $this->selectedFacets = $this->getSelectedFacets($this->facetConfig);
 
         $searchSettings['hits_num'] = 100;
         $requestedFields = $_POST['requestedFields'];
         $codelists = $_POST['codelists'];
         $this->query = $_POST['query'] ?? '';
         if (!empty($requestedFields)) {
-            $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $facetConfig, $searchSettings);
+            $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $this->facetConfig, $searchSettings);
             $page = 0;
             $doSearch = true;
             while ($doSearch) {
                 $page = $page + 1;
-                $hits = $service->getSearchResultsUnparsed($this->query, $page, $this->selectedFacets);
+                [$hits, $facets] = $service->getSearchResultsUnparsed($this->query, $page, $this->selectedFacets, $this->grav['uri'], $this->lang);
                 if ($hits) {
-                    $this->getSearchResultDownloadWithRequestedFields($hits, $requestedFields, $codelists, $this->lang, $output);
+                    $this->getSearchResultDownloadWithRequestedFields($hits, $requestedFields, $codelists, $this->lang, $facets, $output);
                 } else {
                     $doSearch = false;
                 }
@@ -251,8 +254,8 @@ class SearchController
     public function getFacetResetActionUrl(mixed $uri): string
     {
         $query_params = $uri->query(null, true);
-        $facetConfig = $this->grav['config']->get('themes.' . $this->theme . '.hit_search.facet_config') ?: [];
-        foreach ($facetConfig as $facet) {
+        $this->facetConfig = $this->facetConfig ?? $this->grav['config']->get('themes.' . $this->theme . '.hit_search.facet_config');
+        foreach ($this->facetConfig as $facet) {
             $hasActive =  false;
             if ($facet['id'] === 'bbox') {
                 unset($query_params[$facet['id']]);
@@ -278,6 +281,16 @@ class SearchController
                         $query_params[$facet['toggle']['id']] = '';
                     } else {
                         unset($query_params[$facet['toggle']['id']]);
+                    }
+                }
+                if (isset($query_params[$facet['id']]) and !empty($query_params[$facet['id']])) {
+                    if (isset($this->results->facets)) {
+                        foreach ($this->results->facets as $resultFacet) {
+                            if ($resultFacet->id == $facet['id']) {
+                                unset($query_params[$facet['id']]);
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -420,7 +433,7 @@ class SearchController
         return $items;
     }
 
-    private function getSearchResultDownloadWithRequestedFields(array $hits, array $requestedFields, array $codelists, string $lang, array &$items)
+    private function getSearchResultDownloadWithRequestedFields(array $hits, array $requestedFields, array $codelists, string $lang, ?array $facetConfig, array &$items): void
     {
         foreach ($hits as $hit) {
             $source = $hit->_source;
@@ -440,6 +453,27 @@ class SearchController
                 }
             }
             if (!empty($item)) {
+                if (!empty($facetConfig) && !empty($this->selectedFacets)) {
+                    $facets = [];
+                    foreach ($facetConfig as $facet) {
+                        foreach ($this->selectedFacets as $key => $value) {
+                            if ($facet->id == $key) {
+                                if (isset($facet->items)) {
+                                    foreach ($facet->items as $subItem) {
+                                        if (in_array($subItem->value, explode(';', $value))) {
+                                            $labelKey = $this->grav['language']->translate($facet->label ?? $facet->id);
+                                            $labelValue = $this->grav['language']->translate($subItem->label ?? $subItem->value);
+                                            $facets[] = $labelKey . ' = ' . $labelValue;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!empty($facets)) {
+                        $item['facets'] = $facets;
+                    }
+                }
                 $items[] = $item;
             }
         }
@@ -465,5 +499,84 @@ class SearchController
             }
         }
         return false;
+    }
+
+    private function addFacetCatalog(array &$facetConfig): void
+    {
+        foreach ($facetConfig as $key => $facet) {
+            if (property_exists((object)$facet, 'catalog')) {
+                $configApiUrlCatalog = $this->configApi . '/portal/catalogs';
+                $catalog = new CatalogController($this->grav, $configApiUrlCatalog);
+                $items = $catalog->getContent();
+                if(!empty($items)) {
+                    $catalogConfig = $facet['catalog'];
+                    foreach ($items as $item) {
+                        if ($catalogConfig['ident'] == $item['ident']) {
+                            $partnerChildren = $item['children'];
+                            foreach ($partnerChildren as $partnerChild) {
+                                $catalogChildren = $partnerChild['children'];
+                                foreach ($catalogChildren as $catalogChild) {
+                                    $typeChildren = $catalogChild['children'];
+                                    foreach ($typeChildren as $childKey => $typeChild) {
+                                        $newLabel = $typeChild['name'];
+                                        $newParentId = $facet['id'];
+                                        $newChildId = $typeChild['id'];
+                                        $facetConfig[$key]['facets'][$newChildId] = array(
+                                            "label" => $newLabel,
+                                            "query" => array("filter" => array("term" => array("object_node.tree_path.uuid" => $typeChild['uuid']))),
+                                            "parentId" => $newParentId
+                                        );
+                                        if ($typeChild['hasChildren']) {
+                                            $this->addFacetCatalogChild($facetConfig, $facet, $typeChild, $typeChild['partner'], $typeChild['ident']);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private function addFacetCatalogChild(array &$facetConfig, array $facet, array $childFacet, string $partner, string $ident): void
+    {
+        $configApiUrlCatalog = $this->configApi . '/portal/catalogs';
+        $newLabel = $childFacet['name'];
+        $newParentId = $facet['id'] ?? $partner . '-' . substr(md5($ident . '-' . $facet['uuid']), 0, 8);
+        $newChildId = $childFacet['id'] ?? $partner . '-' . substr(md5($ident . '-' . $childFacet['uuid']), 0, 8);
+        $queryParams = $this->grav['uri']->query(null, true);
+        if (isset($queryParams[$newParentId])) {
+            if (in_array($newChildId, explode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $queryParams[$newParentId])) !== false) {
+                $catalog_api = $configApiUrlCatalog . '/' . $ident . '/hierarchy?parent=' . $childFacet['uuid'];
+                if (($response = HttpHelper::getHttpContent($catalog_api)) !== false) {
+                    $selectedSubItems = json_decode($response, true);
+                    if (!empty($selectedSubItems)) {
+                        $newFacets = [];
+                        foreach ($selectedSubItems as $selectedSubItem) {
+                            if ($selectedSubItem['hasChildren']) {
+                                $newSubParentId = $newChildId;
+                                $newSubChildId = $partner . '-' . substr(md5($ident . '-' . $selectedSubItem['uuid']), 0, 8);
+                                $newFacets[$newSubChildId] = array(
+                                    "label" => $selectedSubItem['name'],
+                                    "query" => array("filter" => array("term" => array("object_node.tree_path.uuid" => $selectedSubItem['uuid']))),
+                                    "parentId" => $newSubParentId
+                                );
+                            }
+                        }
+                        if (!empty($newFacets)) {
+                            $facetConfig[] = array(
+                                "id" => $newChildId,
+                                "label" => $newLabel,
+                                "facets" => $newFacets,
+                            );
+                            foreach ($selectedSubItems as $selectedSubItem) {
+                                $this->addFacetCatalogChild($facetConfig, $childFacet, $selectedSubItem, $partner, $ident);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

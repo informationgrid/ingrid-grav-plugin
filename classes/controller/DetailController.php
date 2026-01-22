@@ -78,6 +78,11 @@ class DetailController
             } else {
                 $parser = new DetailMetadata($this->theme);
                 $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
+                if ($this->hit) {
+                    if (isset($this->hit->langCode) && $this->hit->langCode == 'en') {
+                        $this->lang = $this->hit->langCode;
+                    }
+                }
             }
         } elseif ($esHit) {
             $this->hit = SearchHitParserOpendata::parseHits($esHit, $this->lang);

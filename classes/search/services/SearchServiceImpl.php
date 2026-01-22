@@ -77,7 +77,8 @@ class SearchServiceImpl implements SearchService
                 numPage: $page,
                 listOfPages: $this->getPageRanges($page, $numOfPages),
                 hits: SearchResponseTransformer::parseHits($result->hits ?? null, $lang, $theme),
-                facets: isset($result->aggregations->global_filter_aggregations->global_filter) ? SearchResponseTransformer::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null,
+                facets: isset($result->aggregations->global_filter_aggregations->global_filter) ?
+                    SearchResponseTransformerClassic::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null,
             );
         } catch (\Exception $e) {
             DebugHelper::error('Error on search with "' . $query . '": ' . $e);
@@ -85,14 +86,14 @@ class SearchServiceImpl implements SearchService
         return null;
     }
 
-    public function getSearchResultsUnparsed(string $query, int $page, array $selectedFacets): ?array
+    public function getSearchResultsUnparsed(string $query, int $page, array $selectedFacets, $uri, string $lang): ?array
     {
         try {
             $apiResponse = $this->client->request('POST', 'portal/search', [
                 'body' => $this->transformQuery($query, $page - 1, $selectedFacets)
             ]);
             $result = json_decode($apiResponse->getBody()->getContents());
-            return $result->hits;
+            return [$result->hits, isset($result->aggregations->global_filter_aggregations->global_filter) ? SearchResponseTransformerClassic::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null];
         } catch (\Exception $e) {
             DebugHelper::error('Error on search with "' . $query . '": ' . $e);
         }

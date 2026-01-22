@@ -104,6 +104,7 @@ class SearchResultParserClassicISO
             "bwastrs" => self::getBwaStrs($esHit),
             "bawauftragsnummer" => ElasticsearchHelper::getValue($esHit, "bawauftragsnummer"),
             "bawauftragstitel" => ElasticsearchHelper::getValue($esHit, "bawauftragstitel"),
+            "data_category" => ElasticsearchHelper::getValue($esHit, "data_category"),
             "citation" => ElasticsearchHelper::getValue($esHit, "additional_html_citation_quote"),
             "folderNames" => ElasticsearchHelper::getValue($esHit, "object_node.tree_path.name")
         ];
@@ -250,8 +251,9 @@ class SearchResultParserClassicISO
                     if (count($referingObjRefType) > $count) {
                         $referenceAllServiceType[] = $referingObjRefType[$count];
                         $tmpObjRefVersion = $referingObjRefVersion[$count];
-                        if (!in_array($tmpObjRefVersion, $serviceTypes)) {
-                            $serviceTypes[] = CapabilitiesHelper::extractServiceFromServiceTypeVersion($tmpObjRefVersion) ?: $tmpObjRefVersion;
+                        $tmpObjRefVersion = CapabilitiesHelper::extractServiceFromServiceTypeVersion($tmpObjRefVersion) ?? $tmpObjRefVersion;
+                        if (!in_array($tmpObjRefVersion, $serviceTypes) and !empty($tmpObjRefVersion)) {
+                            $serviceTypes[] = $tmpObjRefVersion;
                         }
                     } else {
                         $referenceAllServiceType[] = "";
@@ -287,7 +289,7 @@ class SearchResultParserClassicISO
                         }
                         if (count($objRefType) > $count) {
                             $referenceAllServiceType[] = $objRefType[$count];
-                            if (!in_array($objRefType[$count], $serviceTypes)) {
+                            if (!in_array($objRefType[$count], $serviceTypes) and !empty($objRefType[$count])) {
                                 $serviceTypes[] = $objRefType[$count];
                             }
                         } else {
@@ -340,7 +342,7 @@ class SearchResultParserClassicISO
                     ];
                 }
                 if (count($urlReferenceDatatype) > $count) {
-                    if (!in_array($urlReferenceDatatype[$count], $serviceTypes)) {
+                    if (!in_array($urlReferenceDatatype[$count], $serviceTypes) and !empty($urlReferenceDatatype[$count])) {
                         $serviceTypes[] = $urlReferenceDatatype[$count];
                     }
                 }
