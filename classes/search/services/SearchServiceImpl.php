@@ -78,7 +78,7 @@ class SearchServiceImpl implements SearchService
                 listOfPages: $this->getPageRanges($page, $numOfPages),
                 hits: SearchResponseTransformer::parseHits($result->hits ?? null, $lang, $theme),
                 facets: isset($result->aggregations->global_filter_aggregations->global_filter) ?
-                    SearchResponseTransformerClassic::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null,
+                    SearchResponseTransformer::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null,
             );
         } catch (\Exception $e) {
             DebugHelper::error('Error on search with "' . $query . '": ' . $e);
@@ -93,7 +93,7 @@ class SearchServiceImpl implements SearchService
                 'body' => $this->transformQuery($query, $page - 1, $selectedFacets)
             ]);
             $result = json_decode($apiResponse->getBody()->getContents());
-            return [$result->hits, isset($result->aggregations->global_filter_aggregations->global_filter) ? SearchResponseTransformerClassic::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null];
+            return [$result->hits, isset($result->aggregations->global_filter_aggregations->global_filter) ? SearchResponseTransformer::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null];
         } catch (\Exception $e) {
             DebugHelper::error('Error on search with "' . $query . '": ' . $e);
         }
