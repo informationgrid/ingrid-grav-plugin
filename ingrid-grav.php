@@ -351,8 +351,9 @@ class InGridGravPlugin extends Plugin
                 $page->init($pluginPage);
 
                 $route = $page->route();
+                $routeAliases = $page->routeAliases();
                 $page->rawRoute($url);
-                $page->routeAliases([$url]);
+                $page->routeAliases($routeAliases);
                 if ($parent) {
                     $page->parent($parent);
                 } else {
@@ -360,6 +361,9 @@ class InGridGravPlugin extends Plugin
                 }
                 $pages->addPage($page, $url);
                 $pages->addPage($page, $route);
+                foreach ($routeAliases as $routeAliase) {
+                    $pages->addPage($page, $routeAliase);
+                }
             }
         }
         return $page;
@@ -380,8 +384,9 @@ class InGridGravPlugin extends Plugin
                     $page->init($themeFile);
 
                     $route = $page->route();
+                    $routeAliases = $page->routeAliases();
                     $page->rawRoute($url);
-                    $page->routeAliases([$url]);
+                    $page->routeAliases($routeAliases);
                     if ($parent) {
                         $page->parent($parent);
                     } else {
@@ -389,6 +394,9 @@ class InGridGravPlugin extends Plugin
                     }
                     $pages->addPage($page, $url);
                     $pages->addPage($page, $route);
+                    foreach ($routeAliases as $routeAliase) {
+                        $pages->addPage($page, $routeAliase);
+                    }
                 }
             }
         }
