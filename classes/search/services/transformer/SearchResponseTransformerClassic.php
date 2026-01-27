@@ -93,11 +93,11 @@ class SearchResponseTransformerClassic
                             $label,
                             $bucket->final->doc_count ?? $bucket->doc_count,
                             SearchResponseTransformerClassic::createActionUrl($uri, $facetConfig["id"], $key, $config),
-                            $query['icon'] ?? null,
-                            $query['icon_text'] ?? null,
-                            $query['display_on_empty'] ?? false,
-                            $query['display_line_above'] ?? false,
-                            $query['hidden_by'] ?? null,
+                            $facetConfig['icon'] ?? null,
+                            $facetConfig['icon_text'] ?? null,
+                            $facetConfig['display_on_empty'] ?? false,
+                            $facetConfig['display_line_above'] ?? false,
+                            $facetConfig['hidden_by'] ?? null,
                         );
                     }
                 }
