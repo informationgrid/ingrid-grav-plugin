@@ -12,15 +12,14 @@ class SearchHitParserOpendata
         $id = ElasticsearchHelper::getValue($esHit, 'id');
         $title = ElasticsearchHelper::getValue($esHit, 'title');
         $description = self::getSummary($esHit);
-        $created = ElasticsearchHelper::getValue($esHit, 'created');
+        $created = ElasticsearchHelper::getValue($esHit, 'metadata.created');
         $legal_basis = ElasticsearchHelper::getValue($esHit, 'legal_basis');
         $metadata = self::getMetadata($esHit, $lang);
         $keywords = self::getKeywords($esHit, $lang);
         $distributions = self::getDistributions($esHit, $lang);
         $political_geocoding_level_uri = ElasticsearchHelper::getValue($esHit, 'political_geocoding_level_uri');
-        $quality_process_uri = ElasticsearchHelper::getValue($esHit, 'quality_process_uri');
-        $modified = ElasticsearchHelper::getValue($esHit, 'modified');
-        $issued = ElasticsearchHelper::getValue($esHit, 'issued');
+        $modified = ElasticsearchHelper::getValue($esHit, 'metadata.modified');
+        $issued = ElasticsearchHelper::getValue($esHit, 'metadata.issued');
         $dcat = self::getDCAT($esHit, $lang);
         $spatial = self::getSpatial($esHit, $lang);
         $parent_id = ElasticsearchHelper::getValue($esHit, 'parent_id') ?? "";
@@ -37,7 +36,6 @@ class SearchHitParserOpendata
             $keywords,
             $distributions,
             $political_geocoding_level_uri,
-            $quality_process_uri,
             $modified,
             $issued,
             $dcat,
