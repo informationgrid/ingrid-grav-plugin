@@ -132,8 +132,12 @@ class SearchHitParserOpendata
         $item = ElasticsearchHelper::getValue($esHit, 'temporal');
         if ($item) {
             $accrual_periodicity = ElasticsearchHelper::getValue($esHit, 'temporal.accrual_periodicity') ?? '';
+            $gte = ElasticsearchHelper::getValue($esHit, 'temporal.gte') ?? '';
+            $lte = ElasticsearchHelper::getValue($esHit, 'temporal.lte') ?? '';
             return new SearchHitOpendataTemporal(
-                $accrual_periodicity
+                $accrual_periodicity,
+                $gte,
+                $lte
             );
         }
         return false;
