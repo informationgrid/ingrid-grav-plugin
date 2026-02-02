@@ -388,25 +388,25 @@ class SearchController
                 if (!empty($fnpUrlProgress)) {
                     $itemInfo = [];
                     $itemInfo["url"] = $fnpUrlProgress;
-                    $itemInfo["tags"] = "p";
+                    $itemInfo["tags"] = "v_fnp";
                     $item['bpInfos'][] = $itemInfo;
                 }
                 if (!empty($fnpUrlFinished)) {
                     $itemInfo = [];
                     $itemInfo["url"] = $fnpUrlFinished;
-                    $itemInfo["tags"] = "v";
+                    $itemInfo["tags"] = "v_fnp";
                     $item['bpInfos'][] = $itemInfo;
                 }
                 if (!empty($bpUrlProgress)) {
                     $itemInfo = [];
                     $itemInfo["url"] = $bpUrlProgress;
-                    $itemInfo["tags"] = "p";
+                    $itemInfo["tags"] = "p_bp";
                     $item['bpInfos'][] = $itemInfo;
                 }
                 if (!empty($bpUrlFinished)) {
                     $itemInfo = [];
                     $itemInfo["url"] = $bpUrlFinished;
-                    $itemInfo["tags"] = "v";
+                    $itemInfo["tags"] = "v_bp";
                     $item['bpInfos'][] = $itemInfo;
                 }
                 $item['descr'] = ElasticsearchHelper::getValue($source, 'blp_description');
