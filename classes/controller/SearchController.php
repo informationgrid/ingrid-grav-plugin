@@ -562,6 +562,7 @@ class SearchController
                             $facetConfig[] = array(
                                 "id" => $newChildId,
                                 "label" => $newLabel,
+                                "selection_single" => $facet['selection_single'] ?? false,
                                 "facets" => $newFacets,
                             );
                             foreach ($selectedSubItems as $selectedSubItem) {
