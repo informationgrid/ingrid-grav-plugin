@@ -38,8 +38,7 @@ class LayoutZDMController
                 if ($this->headerBaseHrefRemove) {
                     $response = str_replace('<base href="https://www.kuestendaten.de"/>', '', $response);
                 }
-                $portalUrlPath = '/';
-                $portalUrlPath .= '/user/themes/itzbund_zdm/css/';
+                $portalUrlPath = 'user/themes/itzbund_zdm/css/';
                 $ingridHead = '<link rel="stylesheet" href="' . $portalUrlPath . 'style.css" type="text/css">'
                     . '<link rel="stylesheet" href="' . $portalUrlPath . 'custom.css" type="text/css">';
                 if ($folder == 'measure') {
