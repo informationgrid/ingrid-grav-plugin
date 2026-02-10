@@ -382,7 +382,7 @@ class SearchController
                 if (!empty($fnpUrlProgress)) {
                     $itemInfo = [];
                     $itemInfo["url"] = $fnpUrlProgress;
-                    $itemInfo["tags"] = "v_fnp";
+                    $itemInfo["tags"] = "p_fnp";
                     $item['bpInfos'][] = $itemInfo;
                 }
                 if (!empty($fnpUrlFinished)) {
