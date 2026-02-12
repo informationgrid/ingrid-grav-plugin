@@ -9,11 +9,13 @@ class ProviderController
     public Grav $grav;
     public string $theme;
     public string $query;
+    public string $lang;
 
     public function __construct(Grav $grav)
     {
         $this->grav = $grav;
 
+        $this->lang = $this->grav['language']->getLanguage();
         $this->theme = $this->grav['config']->get('system.pages.theme');
         $this->query = $this->grav['config']->get('themes.' . $this->theme . '.provider.query') ?: '';
     }
