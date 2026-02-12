@@ -31,7 +31,7 @@ class LayoutZDMController
         $url = str_replace('{PORTAL}', $portal['ident'], $url);
         $url .= $portal['label'];
         $cache = $this->grav['cache'];
-        $cacheId = md5($url);
+        $cacheId = md5($url . ($title ?? ''));
         $header = $this->getCacheData($cache, $cacheId);
         if (empty($header)) {
             if (($response = HttpHelper::getHttpContent($url)) !== false) {
@@ -46,7 +46,9 @@ class LayoutZDMController
                 }
                 $response = str_replace('  </head>', $ingridHead . '  </head>', $response);
                 if ($title) {
-                    $response = str_replace('<title>ZDM  -   </title>', '<title>' . $title . ' - ZDM</title>', $response);
+                    if (isset($portal['label'])) {
+                        $response = str_replace('<title>ZDM  -  ' . $portal['label'] . ' </title>', '<title>' . $title . ' - ZDM</title>', $response);
+                    }
                 } else {
                     if ($folder == 'detail') {
                         $response = str_replace('<title>ZDM  -   </title>', '<title>' . $lang->translate('SEARCH_DETAIL.ERROR_NO_DETAILS_AVAILABLE') . ' - ZDM</title>', $response);
@@ -121,7 +123,7 @@ class LayoutZDMController
                 $label = $lang->translate('PAGES.MAP.LABEL');
                 break;
             case 'detail':
-                $label = '';
+                $label = $lang->translate('PAGES.DETAIL.LABEL');
                 break;
             default:
                 break;
