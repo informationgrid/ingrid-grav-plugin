@@ -388,7 +388,7 @@ class SearchController
                 if (!empty($fnpUrlProgress)) {
                     $itemInfo = [];
                     $itemInfo["url"] = $fnpUrlProgress;
-                    $itemInfo["tags"] = "v_fnp";
+                    $itemInfo["tags"] = "p_fnp";
                     $item['bpInfos'][] = $itemInfo;
                 }
                 if (!empty($fnpUrlFinished)) {
@@ -527,7 +527,7 @@ class SearchController
                                             "parentId" => $newParentId
                                         );
                                         if ($typeChild['hasChildren']) {
-                                            $this->addFacetCatalogChild($facetConfig, $facet, $typeChild, $typeChild['partner'], $typeChild['ident']);
+                                            $this->addFacetCatalogChild($facetConfig, $facet, $typeChild, $typeChild['partner'], $typeChild['ident'], $facet['selection_single'] ?? false);
                                         }
                                     }
                                 }
@@ -539,7 +539,7 @@ class SearchController
         }
     }
 
-    private function addFacetCatalogChild(array &$facetConfig, array $facet, array $childFacet, string $partner, string $ident): void
+    private function addFacetCatalogChild(array &$facetConfig, array $facet, array $childFacet, string $partner, string $ident, bool $singleSelection): void
     {
         $configApiUrlCatalog = $this->configApi . '/portal/catalogs';
         $newLabel = $childFacet['name'];
@@ -568,10 +568,11 @@ class SearchController
                             $facetConfig[] = array(
                                 "id" => $newChildId,
                                 "label" => $newLabel,
+                                "selection_single" => $singleSelection,
                                 "facets" => $newFacets,
                             );
                             foreach ($selectedSubItems as $selectedSubItem) {
-                                $this->addFacetCatalogChild($facetConfig, $childFacet, $selectedSubItem, $partner, $ident);
+                                $this->addFacetCatalogChild($facetConfig, $childFacet, $selectedSubItem, $partner, $ident, $singleSelection);
                             }
                         }
                     }
