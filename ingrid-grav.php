@@ -198,9 +198,25 @@ class InGridGravPlugin extends Plugin
                 foreach ($pages_to_redirect as $redirect) {
                     $redirectPath = $redirect['path'];
                     $redirectUrl = $redirect['url'];
+                    $redirectParams = $redirect['params'] ?? [];
                     if (!empty($redirectPath) && !empty($redirectUrl)) {
                         if ($redirectPath == $page->rawRoute()) {
-                            $this->grav->redirect($redirectUrl);
+                            if (!empty($redirectParams)) {
+                                $paramsExists = false;
+                                foreach ($redirectParams as $redirectParamKey => $redirectParamValue) {
+                                    if (str_contains($uri->query(), $redirectParamKey . '=' . $redirectParamValue)) {
+                                        $paramsExists = true;
+                                    } else {
+                                        $paramsExists = false;
+                                        break;
+                                    }
+                                }
+                                if ($paramsExists) {
+                                    $this->grav->redirect($redirectUrl);
+                                }
+                            } else {
+                                $this->grav->redirect($redirectUrl);
+                            }
                         }
                     }
                 }
