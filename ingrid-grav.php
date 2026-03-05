@@ -214,6 +214,27 @@ class InGridGravPlugin extends Plugin
                                 if ($paramsExists) {
                                     $this->grav->redirect($redirectUrl);
                                 }
+                            } else if (!empty($this->grav['uri']->query(null, true))) {
+                                $foundParams = false;
+                                foreach ($this->grav['uri']->query(null, true) as $key => $value) {
+                                    if (!$foundParams) {
+                                        foreach ($pages_to_redirect as $tmpRedirect) {
+                                            if ($tmpRedirect['path'] == $page->rawRoute()) {
+                                                if (!empty($tmpRedirect['params'])) {
+                                                    if (isset($tmpRedirect['params'][$key])) {
+                                                        if ($tmpRedirect['params'][$key] == $value) {
+                                                            $foundParams = true;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (!$foundParams) {
+                                            $this->grav->redirect($redirectUrl);
+                                        }
+                                    }
+                                }
                             } else {
                                 $this->grav->redirect($redirectUrl);
                             }
