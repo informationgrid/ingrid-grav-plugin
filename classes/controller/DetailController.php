@@ -4,6 +4,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 use GuzzleHttp\Client;
+use RocketTheme\Toolbox\Event\Event;
 
 class DetailController
 {
@@ -78,6 +79,11 @@ class DetailController
                 $parser = new DetailMetadata($this->theme);
                 $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
                 if ($this->hit) {
+                    $event = new Event([
+                        'hit' => $this->hit,
+                        'content' => $content,
+                    ]);
+                    $this->grav->fireEvent('onThemeDetailMetadataEvent', $event);
                     if (isset($this->hit->langCode) && $this->hit->langCode == 'en') {
                         $this->lang = $this->hit->langCode;
                     }
