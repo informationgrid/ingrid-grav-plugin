@@ -388,9 +388,6 @@ class InGridGravPlugin extends Plugin
                 $page->init($pluginPage);
 
                 $route = $page->route();
-                if ('/' . $pages->getHomeRoute() == $url) {
-                    $route = $page->route('/');
-                }
                 $routeAliases = $page->routeAliases();
                 $page->rawRoute($url);
                 $page->routeAliases($routeAliases);
@@ -403,6 +400,10 @@ class InGridGravPlugin extends Plugin
                 $pages->addPage($page, $route);
                 foreach ($routeAliases as $routeAliase) {
                     $pages->addPage($page, $routeAliase);
+                }
+                if ('/' . $pages->getHomeRoute() == $url) {
+                    $route = $page->route('/');
+                    $pages->addPage($page, $route);
                 }
             }
         }
