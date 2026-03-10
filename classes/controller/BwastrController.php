@@ -30,8 +30,8 @@ class BwastrController
         $uri = $this->grav['uri'];
 
         $id = $uri->query('id') ?? "";
-        $from = $uri->query('from') ?? "";
-        $to = $uri->query('to') ?? "";
+        $from = $uri->query('von') ?? "";
+        $to = $uri->query('bis') ?? "";
         $resp = '{}';
 
         if (intval($id) and intval($id) < $this->limit) {
