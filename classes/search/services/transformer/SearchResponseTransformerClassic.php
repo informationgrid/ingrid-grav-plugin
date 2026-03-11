@@ -274,7 +274,7 @@ class SearchResponseTransformerClassic
         return '?' . join('&', $query_string);
     }
 
-    private static function parseHit($esHit, string $lang, string $theme): array
+    private static function parseHit($esHit, string $lang, string $theme): ?SearchResultHit
     {
         switch ($theme) {
             case 'uvp':

@@ -3,11 +3,12 @@
 namespace Grav\Plugin;
 use Grav\Common\Grav;
 use Grav\Common\Utils;
+use RocketTheme\Toolbox\Event\Event;
 
 class SearchResultParserClassicISO
 {
 
-    public static function parseHits(\stdClass $esHit, string $lang): array
+    public static function parseHits(\stdClass $esHit, string $lang): ?SearchResultHit
     {
         $uuid = null;
         $type = null;
@@ -65,49 +66,62 @@ class SearchResultParserClassicISO
         $obj_serv_type = $servType;
         $capUrl = ElasticsearchHelper::getFirstValue($esHit, "capabilities_url");
         $datasource_uuid = ElasticsearchHelper::getValue($esHit, "t011_obj_geo.datasource_uuid");
-        return [
-            "uuid" => $uuid,
-            "type" => $type,
-            "type_name" => $type_name,
-            "title" => $title,
-            "url" => in_array("www", $datatypes) ? ElasticsearchHelper::getValue($esHit, "url") : null,
-            "time" => $time,
-            "summary" => self::getSummary($esHit),
-            "datatypes" => $datatypes,
-            "partners" => ElasticsearchHelper::getValueArray($esHit, "partner"),
-            "providers" => array_map(function ($provider) use ($lang) {
-                    return CodelistHelper::getCodelistEntryByIdent('111', $provider, $lang);
-                },
-                ElasticsearchHelper::getValueArray($esHit, "provider")),
-            "data_source" => ElasticsearchHelper::getValue($esHit, "dataSourceName"),
-            "searchterms" => $searchTerms,
-            "map_bboxes" => ElasticsearchHelper::getBBoxes($esHit, $title),
-            "t011_obj_serv.type" => ElasticsearchHelper::getValue($esHit, "t011_obj_serv.type"),
-            "t011_obj_serv.type_key" => ElasticsearchHelper::getValue($esHit, "t011_obj_serv.type_key"),
-            "license" => self::getLicense($esHit, $lang),
-            "links" => isset($type) ? self::getLinks($esHit, $type, $servType, $servTypeVersion, $serviceTypes) : [],
-            "serviceTypes" => $serviceTypes,
-            "additional_html_1" => self::getPreviews($esHit, "additional_html_1"),
-            "isInspire" => !($isInspire == "N"),
-            "isOpendata" => !($isOpendata == "N"),
-            "hasAccessConstraint" => !($hasAccessConstraint == "N"),
-            "isHVD" => ElasticsearchHelper::getValue($esHit, "is_hvd") ?? false,
-            "obj_serv_type" => $obj_serv_type ? CodelistHelper::getCodelistEntryByIso('5100', $obj_serv_type, $lang) : null,
-            "mapUrl" => $capUrl ? CapabilitiesHelper::getMapUrl($capUrl, $servTypeVersion, $servType, $datasource_uuid) : null,
-            "mapUrlClient" => ElasticsearchHelper::getFirstValue($esHit, "capabilities_url_with_client"),
-            "wkts" => ElasticsearchHelper::getValueArray($esHit, "wkt_geo_text"),
-            "y1" => ElasticsearchHelper::getValueArray($esHit, "y1"),
-            "x1" => ElasticsearchHelper::getValueArray($esHit, "x1"),
-            "y2" => ElasticsearchHelper::getValueArray($esHit, "y2"),
-            "x2" => ElasticsearchHelper::getValueArray($esHit, "x2"),
-            "bwastr_name" => ElasticsearchHelper::getValueArray($esHit, "bwstr-bwastr_name"),
-            "bwastrs" => self::getBwaStrs($esHit),
-            "bawauftragsnummer" => ElasticsearchHelper::getValue($esHit, "bawauftragsnummer"),
-            "bawauftragstitel" => ElasticsearchHelper::getValue($esHit, "bawauftragstitel"),
-            "data_category" => ElasticsearchHelper::getValue($esHit, "data_category"),
-            "citation" => ElasticsearchHelper::getValue($esHit, "additional_html_citation_quote"),
-            "folderNames" => ElasticsearchHelper::getValue($esHit, "object_node.tree_path.name")
-        ];
+
+        if ($title) {
+            $hit = new SearchResultHit($title);
+            $hit->uuid = $uuid;
+            $hit->type = $type;
+            $hit->type_name = $type_name;
+            $hit->url = in_array("www", $datatypes) ? ElasticsearchHelper::getValue($esHit, "url") : null;
+            $hit->time = $time;
+            $hit->summary = self::getSummary($esHit);
+            $hit->datatypes = $datatypes;
+            $hit->partners = ElasticsearchHelper::getValueArray($esHit, "partner");
+            $hit->providers = array_map(function ($provider) use ($lang) {
+                return CodelistHelper::getCodelistEntryByIdent('111', $provider, $lang);
+            },
+                ElasticsearchHelper::getValueArray($esHit, "provider")
+            );
+            $hit->data_source = ElasticsearchHelper::getValue($esHit, "dataSourceName");
+            $hit->searchterms = $searchTerms;
+            $hit->map_bboxes = ElasticsearchHelper::getBBoxes($esHit, $title);
+            $hit->t011_obj_serv = ElasticsearchHelper::getValue($esHit, "t011_obj_serv.type");
+            $hit->t011_obj_serv = ElasticsearchHelper::getValue($esHit, "t011_obj_serv.type_key");
+            $hit->license = self::getLicense($esHit, $lang);
+            $hit->links = isset($type) ? self::getLinks($esHit, $type, $servType, $servTypeVersion, $serviceTypes) : [];
+            $hit->serviceTypes = $serviceTypes;
+            $hit->additional_html_1 = self::getPreviews($esHit, "additional_html_1");
+            $hit->isInspire = !($isInspire == "N");
+            $hit->isOpendata = !($isOpendata == "N");
+            $hit->hasAccessConstraint = !($hasAccessConstraint == "N");
+            $hit->isHVD = ElasticsearchHelper::getValue($esHit, "is_hvd") ?? false;
+            $hit->obj_serv_type = $obj_serv_type ? CodelistHelper::getCodelistEntryByIso('5100', $obj_serv_type, $lang) : null;
+            $hit->mapUrl = $capUrl ? CapabilitiesHelper::getMapUrl($capUrl, $servTypeVersion, $servType, $datasource_uuid) : null;
+            $hit->mapUrlClient = ElasticsearchHelper::getFirstValue($esHit, "capabilities_url_with_client");
+            $hit->wkts = ElasticsearchHelper::getValueArray($esHit, "wkt_geo_text");
+            $hit->y1 = ElasticsearchHelper::getValueArray($esHit, "y1");
+            $hit->x1 = ElasticsearchHelper::getValueArray($esHit, "x1");
+            $hit->y2 = ElasticsearchHelper::getValueArray($esHit, "y2");
+            $hit->x2 = ElasticsearchHelper::getValueArray($esHit, "x2");
+            $hit->bwastr_name = ElasticsearchHelper::getValueArray($esHit, "bwstr-bwastr_name");
+            $hit->bwastrs = self::getBwaStrs($esHit);
+            $hit->bawauftragsnummer = ElasticsearchHelper::getValue($esHit, "bawauftragsnummer");
+            $hit->bawauftragstitel = ElasticsearchHelper::getValue($esHit, "bawauftragstitel");
+            $hit->data_category = ElasticsearchHelper::getValue($esHit, "data_category");
+            $hit->citation = ElasticsearchHelper::getValue($esHit, "additional_html_citation_quote");
+            $hit->folderNames = ElasticsearchHelper::getValue($esHit, "object_node.tree_path.name");
+
+            if (in_array("metadata", $datatypes)) {
+                $event = new Event([
+                    'hit' => $hit,
+                    'content' => $esHit,
+                    'lang' => $lang,
+                ]);
+                Grav::instance()->fireEvent('onThemeSearchHitMetadataEvent', $event);
+            }
+            return $hit;
+        }
+        return null;
     }
 
     private static function getSummary(\stdClass $esHit): ?string
