@@ -7,6 +7,46 @@
         var buffer = 0; //scroll bar buffer
         var iframe = document.getElementById('iframe_map');
         var urlParams = location.search;
+{% if map.is_masterportal %}
+        var url = new URL('{{ map.url }}' + urlParams);
+        var maps = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'maps');
+        var preset = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'preset');
+        var layers = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'layers' && elem[1].startsWith('['));
+        var zoom = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'zoom');
+        var east = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'e');
+        var north = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'n');
+        var layersLegacy = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'layers' && !elem[1].startsWith('['));
+        var bgLayer = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'bglayer');
+
+        if (!preset && layersLegacy) {
+            url.searchParams.delete(layersLegacy[0]);
+            url.searchParams.set('preset', layersLegacy[1]);
+        }
+
+        if (!layers && bgLayer) {
+            url.searchParams.delete(bgLayer[0]);
+            url.searchParams.set('LAYERS', JSON.stringify([{'id': bgLayer[1], 'visibility': true}]));
+        }
+
+        if (!maps && ((north && east) || zoom)) {
+            var mapsValue = {};
+            if (zoom) {
+                url.searchParams.delete(zoom[0]);
+                var zoomValue = zoom[1];
+                if (zoomValue >= 3) zoomValue = zoomValue -3;
+                    else zoomValue = 0;
+                mapsValue.zoom = zoomValue;
+            }
+            if(north && east) {
+                url.searchParams.delete(north[0]);
+                url.searchParams.delete(east[0]);
+                mapsValue.center = [east[1], north[1]];
+                url.searchParams.set('MAPS', JSON.stringify(mapsValue));
+            }
+        }
+        // Add iFrame 'src'
+        iframe.src = url.href;
+{% else %}
         var url = '{{ map.url }}' + urlParams;
         var editParams = '';
         var editParamsE = '';
@@ -16,7 +56,7 @@
 
         // Add iFrame 'src'
         iframe.src = url;
-
+{% endif %}
         // .onload doesn't work with IE8 and older.
         if (iframe.attachEvent) {
             iframe.attachEvent('onload', resizeIframe);
