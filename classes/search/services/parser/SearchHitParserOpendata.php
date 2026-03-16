@@ -98,7 +98,7 @@ class SearchHitParserOpendata
             $array[] = new SearchHitOpendataContact(
                 '',
                 $role,
-                CodelistHelper::getCodelistEntry('505', $role, $lang) ?? $role,
+                $role ? CodelistHelper::getCodelistEntry('505', $role, $lang) : '',
                 $name,
                 $communications,
                 $street,
@@ -106,7 +106,7 @@ class SearchHitParserOpendata
                 $pocode,
                 $pobox,
                 $locality,
-                CountryHelper::getNameFromNumber($country, $lang),
+                $country ? CountryHelper::getNameFromNumber($country, $lang) : '',
                 $administrative_area,
             );
         }
