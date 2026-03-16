@@ -103,13 +103,6 @@ class SearchResultParserClassicISO
             $hit->x1 = ElasticsearchHelper::getValueArray($esHit, "x1");
             $hit->y2 = ElasticsearchHelper::getValueArray($esHit, "y2");
             $hit->x2 = ElasticsearchHelper::getValueArray($esHit, "x2");
-            $hit->bwastr_name = ElasticsearchHelper::getValueArray($esHit, "bwstr-bwastr_name");
-            $hit->bwastrs = self::getBwaStrs($esHit);
-            $hit->bawauftragsnummer = ElasticsearchHelper::getValue($esHit, "bawauftragsnummer");
-            $hit->bawauftragstitel = ElasticsearchHelper::getValue($esHit, "bawauftragstitel");
-            $hit->data_category = ElasticsearchHelper::getValue($esHit, "data_category");
-            $hit->citation = ElasticsearchHelper::getValue($esHit, "additional_html_citation_quote");
-            $hit->folderNames = ElasticsearchHelper::getValue($esHit, "object_node.tree_path.name");
 
             if (in_array("metadata", $datatypes)) {
                 $event = new Event([
@@ -137,7 +130,7 @@ class SearchResultParserClassicISO
             }
             libxml_clear_errors();
             $summary = $doc->saveHTML();
-            while(str_starts_with($summary, '<p>')) {
+            while (str_starts_with($summary, '<p>')) {
                 $replace = '';
                 $find = '<p>';
                 $summary = preg_replace("@$find@", $replace, $summary, 1);
@@ -237,7 +230,7 @@ class SearchResultParserClassicISO
         $referenceAllServiceVersion = [];
         $referenceAllServiceType = [];
 
-        $array = array ();
+        $array = array();
         $referingObjRefUUID = ElasticsearchHelper::getValueArray($esHit, "refering.object_reference.obj_uuid");
         $referingObjRefName = ElasticsearchHelper::getValueArray($esHit, "refering.object_reference.obj_name");
         $referingObjRefClass = ElasticsearchHelper::getValueArray($esHit, "refering.object_reference.obj_class");
@@ -290,7 +283,7 @@ class SearchResultParserClassicISO
                     "kind" => "other",
                 ];
             } else {
-                if(!empty($objRefName[$count])) {
+                if (!empty($objRefName[$count])) {
                     if (!in_array($objUuid, $referenceAllUUID)) {
                         $referenceAllUUID[] = $objUuid;
                         $referenceAllName[] = $objRefName[$count];
@@ -320,7 +313,7 @@ class SearchResultParserClassicISO
         $urlReferenceDatatype = ElasticsearchHelper::getValueArray($esHit, "t017_url_ref.datatype");
 
         foreach ($urlReferenceLink as $count => $url) {
-            if(!empty($url)) {
+            if (!empty($url)) {
                 $format = !empty($urlReferenceSpecialRef[$count]) ? $urlReferenceSpecialRef[$count] : null;
                 $kind = "other";
                 if ($format == "9990") {
@@ -363,7 +356,7 @@ class SearchResultParserClassicISO
             }
         }
 
-        foreach($referenceAllUUID as $count => $uuid) {
+        foreach ($referenceAllUUID as $count => $uuid) {
             $array[] = [
                 "uuid" => $uuid,
                 "title" => $referenceAllName[$count],
@@ -416,28 +409,5 @@ class SearchResultParserClassicISO
             "t1" => ElasticsearchHelper::getValueTime($esHit, "t1"),
             "t2" => ElasticsearchHelper::getValueTime($esHit, "t2"),
         ];
-    }
-
-    private static function getBwaStrs(\stdClass $esHit): array
-    {
-        $array = [];
-        $ids = ElasticsearchHelper::getValueArray($esHit, "bwstr-bwastr-id");
-        $froms = ElasticsearchHelper::getValueArray($esHit, "bwstr-strecken_km_von");
-        $tos = ElasticsearchHelper::getValueArray($esHit, "bwstr-strecken_km_bis");
-        if (!empty($ids) && !empty($froms) && !empty($tos)) {
-            for ($i = 0; $i < count($ids); $i++) {
-                $id = $ids[$i];
-                if (str_ends_with($id, '00')) {
-                    $id = substr($id, 0, -2);
-                    $id = $id . '01';
-                }
-                $array[] = [
-                    "id" => $id,
-                    "from" => $froms[$i],
-                    "to" => $tos[$i],
-                ];
-            }
-        }
-        return $array;
     }
 }

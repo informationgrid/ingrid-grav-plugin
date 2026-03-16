@@ -19,6 +19,7 @@ class DetailController
     public string $theme;
     public string $timezone;
     public null|DetailMetadataISO|DetailAddressISO|DetailMetadataHTML|DetailMetadataUVP $hit;
+    public \stdClass $esHit;
     public array $partners;
     public string $title;
 
@@ -45,13 +46,13 @@ class DetailController
             if ($responseContent) {
                 $hits = json_decode($responseContent)->hits;
                 if (count($hits) > 0) {
-                    $esHit = $hits[0];
-                    if ($esHit) {
-                        $response = ElasticsearchHelper::getValue($esHit, 'idf');
-                        $dataSourceName = ElasticsearchHelper::getValue($esHit, 't03_catalogue.cat_name') ?? ElasticsearchHelper::getValue($esHit, 'dataSourceName');
-                        $this->partners = ElasticsearchHelper::getValueArray($esHit, 'partner');
-                        $tmpProviders = ElasticsearchHelper::getValueArray($esHit, 'provider');
-                        $this->title = ElasticsearchHelper::getValue($esHit, 'title');
+                    $this->esHit = $hits[0];
+                    if ($this->esHit) {
+                        $response = ElasticsearchHelper::getValue($this->esHit, 'idf');
+                        $dataSourceName = ElasticsearchHelper::getValue($this->esHit, 't03_catalogue.cat_name') ?? ElasticsearchHelper::getValue($this->esHit, 'dataSourceName');
+                        $this->partners = ElasticsearchHelper::getValueArray($this->esHit, 'partner');
+                        $tmpProviders = ElasticsearchHelper::getValueArray($this->esHit, 'provider');
+                        $this->title = ElasticsearchHelper::getValue($this->esHit, 'title');
                         foreach ($tmpProviders as $provider) {
                             $providers[] = CodelistHelper::getCodelistEntryByIdent(['111'], $provider, $this->lang) ?? $provider;
                         }
@@ -81,7 +82,9 @@ class DetailController
                 if ($this->hit) {
                     $event = new Event([
                         'hit' => $this->hit,
+                        'esHit' => $this->esHit,
                         'content' => $content,
+                        'lang' => $this->lang,
                     ]);
                     $this->grav->fireEvent('onThemeDetailMetadataEvent', $event);
                     if (isset($this->hit->langCode) && $this->hit->langCode == 'en') {
@@ -102,10 +105,10 @@ class DetailController
             $plugId = null;
             $title = null;
             if (count($hits) > 0) {
-                $esHit = $hits[0];
-                $response = ElasticsearchHelper::getValue($esHit, 'idf');
-                $plugId = ElasticsearchHelper::getValue($esHit, 'iPlugId');
-                $title = ElasticsearchHelper::getValue($esHit,'title');
+                $this->esHit = $hits[0];
+                $response = ElasticsearchHelper::getValue($this->esHit, 'idf');
+                $plugId = ElasticsearchHelper::getValue($this->esHit, 'iPlugId');
+                $title = ElasticsearchHelper::getValue($this->esHit,'title');
             }
             if (!empty($response)) {
                 $parser = new DetailCreateZipUVPServiceImpl('downloads/zip', $title, $this->uuid, $plugId, $this->grav);
