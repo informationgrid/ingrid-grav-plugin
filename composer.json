@@ -43,14 +43,26 @@
       "classes/detail/zip/DetailCreateZipUVPServiceImpl.php",
       "classes/search/model/SearchResult.php",
       "classes/search/model/SearchResultHit.php",
+      "classes/search/model/opendata/SearchHitOpendata.php",
+      "classes/search/model/opendata/SearchHitOpendataContact.php",
+      "classes/search/model/opendata/SearchHitOpendataContactCommunication.php",
+      "classes/search/model/opendata/SearchHitOpendataDCAT.php",
+      "classes/search/model/opendata/SearchHitOpendataDistribution.php",
+      "classes/search/model/opendata/SearchHitOpendataDistributionLicense.php",
+      "classes/search/model/opendata/SearchHitOpendataKeyword.php",
+      "classes/search/model/opendata/SearchHitOpendataMetadata.php",
+      "classes/search/model/opendata/SearchHitOpendataSpatial.php",
+      "classes/search/model/opendata/SearchHitOpendataSpatialAdministrative.php",
+      "classes/search/model/opendata/SearchHitOpendataTemporal.php",
       "classes/search/model/FacetResult.php",
       "classes/search/model/FacetItem.php",
       "classes/search/model/FacetItemMulti.php",
       "classes/search/services/SearchService.php",
       "classes/search/services/SearchServiceImpl.php",
-      "classes/search/services/transformer/SearchResponseTransformerClassic.php",
+      "classes/search/services/transformer/SearchResponseTransformer.php",
       "classes/search/services/parser/SearchResultParserClassicISO.php",
-      "classes/search/services/parser/SearchResultParserClassicUVP.php"
+      "classes/search/services/parser/SearchResultParserClassicUVP.php",
+      "classes/search/services/parser/SearchHitParserOpendata.php"
     ]
 
   }

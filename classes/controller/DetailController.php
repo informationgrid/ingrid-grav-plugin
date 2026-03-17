@@ -18,7 +18,7 @@ class DetailController
     public string $cswUrl;
     public string $theme;
     public string $timezone;
-    public null|DetailMetadataISO|DetailAddressISO|DetailMetadataHTML|DetailMetadataUVP $hit;
+    public null|DetailMetadataISO|DetailAddressISO|DetailMetadataHTML|DetailMetadataUVP|SearchHitOpendata $hit;
     public \stdClass $esHit;
     public array $partners;
     public string $title;
@@ -40,6 +40,7 @@ class DetailController
         $response = null;
         $dataSourceName = null;
         $providers = [];
+        $esHit = null;
 
         if ($this->uuid) {
             $responseContent = $this->getResponseContent($this->configApi, $this->uuid, $this->type);
@@ -48,7 +49,6 @@ class DetailController
                 if (count($hits) > 0) {
                     $this->esHit = $hits[0];
                     if ($this->esHit) {
-                        $response = ElasticsearchHelper::getValue($this->esHit, 'idf');
                         $dataSourceName = ElasticsearchHelper::getValue($this->esHit, 't03_catalogue.cat_name') ?? ElasticsearchHelper::getValue($this->esHit, 'dataSourceName');
                         $this->partners = ElasticsearchHelper::getValueArray($this->esHit, 'partner');
                         $tmpProviders = ElasticsearchHelper::getValueArray($this->esHit, 'provider');
@@ -56,6 +56,7 @@ class DetailController
                         foreach ($tmpProviders as $provider) {
                             $providers[] = CodelistHelper::getCodelistEntryByIdent(['111'], $provider, $this->lang) ?? $provider;
                         }
+                        $response = ElasticsearchHelper::getValue($this->esHit, 'idf');
                     }
                 }
             }
@@ -92,6 +93,8 @@ class DetailController
                     }
                 }
             }
+        } elseif ($esHit) {
+            $this->hit = SearchHitParserOpendata::parseHits($esHit, $this->lang);
         }
     }
 
@@ -181,7 +184,7 @@ class DetailController
             $datatype = 'datatype:address';
         }
         $queryString = array("query_string" => array (
-                "query" => $indexField . ':"' . $uuid . '" ' . $datatype,
+                "query" => '(' . $indexField . ':"' . $uuid . '" OR id:"' . $uuid . '") ',
                 "default_operator" => $queryStringOperator,
             )
         );

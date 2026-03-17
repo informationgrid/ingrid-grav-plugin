@@ -76,9 +76,9 @@ class SearchServiceImpl implements SearchService
                 numOfPages: intval($numOfPages),
                 numPage: $page,
                 listOfPages: $this->getPageRanges($page, $numOfPages),
-                hits: SearchResponseTransformerClassic::parseHits($result->hits ?? null, $lang, $theme),
+                hits: SearchResponseTransformer::parseHits($result->hits ?? null, $lang, $theme),
                 facets: isset($result->aggregations->global_filter_aggregations->global_filter) ?
-                    SearchResponseTransformerClassic::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null,
+                    SearchResponseTransformer::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null,
             );
         } catch (\Exception $e) {
             DebugHelper::error('Error on search with "' . $query . '": ' . $e);
@@ -93,7 +93,7 @@ class SearchServiceImpl implements SearchService
                 'body' => $this->transformQuery($query, $page - 1, $selectedFacets)
             ]);
             $result = json_decode($apiResponse->getBody()->getContents());
-            return [$result->hits, isset($result->aggregations->global_filter_aggregations->global_filter) ? SearchResponseTransformerClassic::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null];
+            return [$result->hits, isset($result->aggregations->global_filter_aggregations->global_filter) ? SearchResponseTransformer::parseAggregations((object)$result->aggregations->global_filter_aggregations->global_filter, $this->facet_config, $uri, $lang) : null];
         } catch (\Exception $e) {
             DebugHelper::error('Error on search with "' . $query . '": ' . $e);
         }
@@ -141,7 +141,17 @@ class SearchServiceImpl implements SearchService
     {
         SearchQueryHelper::replaceInGridQuery($query);
         SearchQueryHelper::transformColonQuery($query);
-        $result = ElasticsearchService::convertToQuery($query, $this->facet_config, $page, $this->hitsNum, $selectedFacets, $this->addToSearch, $this->sortByDate, $this->queryFields, $this->queryStringOperator, $this->requestedFields, $this->searchSourceSettings);
+        $result = ElasticsearchService::convertToQuery($query,
+            $this->facet_config,
+            $page,
+            $this->hitsNum,
+            $selectedFacets,
+            $this->addToSearch,
+            $this->sortByDate,
+            $this->queryFields,
+            $this->queryStringOperator,
+            $this->requestedFields,
+            $this->searchSourceSettings);
         DebugHelper::debug('Elasticsearch query: ' . $result);
         return $result;
     }

@@ -4,12 +4,14 @@ namespace Grav\Plugin;
 
 use Grav\Common\Grav;
 
-class SearchResponseTransformerClassic
+class SearchResponseTransformer
 {
     public static function parseHits(array $hits, string $lang, string $theme): array
     {
         return array_map(
-            function($hit) use ($lang, $theme) { return self::parseHit($hit, $lang, $theme); },
+            function($hit) use ($lang, $theme) {
+                return self::parseHit($hit, $lang, $theme);
+            },
             $hits
         );
     }
@@ -44,7 +46,7 @@ class SearchResponseTransformerClassic
                                 $key,
                                 $label,
                                 ((array)$aggregations)[$key]->doc_count,
-                                SearchResponseTransformerClassic::createActionUrl($uri, $query['parent'] ?? $facetConfig["id"], $key, $config, $facetConfig["link_to_search"] ?? false),
+                                SearchResponseTransformer::createActionUrl($uri, $query['parent'] ?? $facetConfig["id"], $key, $config, $facetConfig["link_to_search"] ?? false),
                                 $query['icon'] ?? null,
                                 $query['icon_text'] ?? null,
                                 $query['display_on_empty'] ?? false,
@@ -59,7 +61,7 @@ class SearchResponseTransformerClassic
                                 $item = [];
                                 $item['label'] = $splitFacetValue['label'];
                                 $item['count'] = ((array)$aggregations)[$newKey]->doc_count;
-                                $item['actionLink'] = SearchResponseTransformerClassic::createActionUrl($uri, $facetConfig["id"], $key, $config);
+                                $item['actionLink'] = SearchResponseTransformer::createActionUrl($uri, $facetConfig["id"], $key, $config);
                                 if (isset($splitFacetValue['extend_href'])) {
                                     $item['actionLink'] = $item['actionLink'] . $splitFacetValue['extend_href'];
                                 }
@@ -92,7 +94,7 @@ class SearchResponseTransformerClassic
                             $key,
                             $label,
                             $bucket->final->doc_count ?? $bucket->doc_count,
-                            SearchResponseTransformerClassic::createActionUrl($uri, $facetConfig["id"], $key, $config),
+                            SearchResponseTransformer::createActionUrl($uri, $facetConfig["id"], $key, $config),
                             $facetConfig['icon'] ?? null,
                             $facetConfig['icon_text'] ?? null,
                             $facetConfig['display_on_empty'] ?? false,
@@ -274,14 +276,18 @@ class SearchResponseTransformerClassic
         return '?' . join('&', $query_string);
     }
 
-    private static function parseHit($esHit, string $lang, string $theme): ?SearchResultHit
+    private static function parseHit($esHit, string $lang, string $theme): null|SearchResultHit|SearchHitOpendata
     {
         switch ($theme) {
             case 'uvp':
             case 'uvp-ni':
                 return SearchResultParserClassicUVP::parseHits($esHit, $lang);
             default:
-                return SearchResultParserClassicISO::parseHits($esHit, $lang);
+                if (ElasticsearchHelper::getValue($esHit, 'metadata')) {
+                    return SearchHitParserOpendata::parseHits($esHit, $lang);
+                } else {
+                    return SearchResultParserClassicISO::parseHits($esHit, $lang);
+                }
         }
     }
 

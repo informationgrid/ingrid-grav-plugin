@@ -65,7 +65,13 @@ class SearchController
         $this->addFacetsBySelection($this->facetConfig);
         $this->selectedFacets = $this->getSelectedFacets($this->facetConfig);
         $service = new SearchServiceImpl($this->grav, $this->grav['uri'], $this->facetConfig, $searchSettings);
-        $this->results = $service->getSearchResults($this->query, $this->page, $this->selectedFacets, $this->grav['uri'], $this->lang, $this->theme);
+        $this->results = $service->getSearchResults($this->query,
+            $this->page,
+            $this->selectedFacets,
+            $this->grav['uri'],
+            $this->lang,
+            $this->theme
+        );
     }
 
     public function getContentMapLegend(): void
