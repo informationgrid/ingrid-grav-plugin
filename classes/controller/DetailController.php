@@ -93,8 +93,8 @@ class DetailController
                     }
                 }
             }
-        } elseif ($esHit) {
-            $this->hit = SearchHitParserOpendata::parseHits($esHit, $this->lang);
+        } elseif ($this->esHit) {
+            $this->hit = SearchHitParserOpendata::parseHits($this->esHit, $this->lang);
         }
     }
 
