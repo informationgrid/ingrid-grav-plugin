@@ -80,7 +80,7 @@ class DetailController
             } else {
                 $parser = new DetailMetadata($this->theme);
                 $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
-                if ($this->hit) {
+                if (isset($this->hit)) {
                     $event = new Event([
                         'hit' => $this->hit,
                         'esHit' => $this->esHit,
@@ -93,7 +93,7 @@ class DetailController
                     }
                 }
             }
-        } elseif ($this->esHit) {
+        } elseif (isset($this->esHit)) {
             $this->hit = SearchHitParserOpendata::parseHits($this->esHit, $this->lang);
         }
     }
@@ -184,7 +184,7 @@ class DetailController
             $datatype = 'datatype:address';
         }
         $queryString = array("query_string" => array (
-                "query" => '(' . $indexField . ':"' . $uuid . '" OR id:"' . $uuid . '") ',
+                "query" => '(' . $indexField . ':"' . $uuid . '" OR id:"' . $uuid . '") ' . $datatype,
                 "default_operator" => $queryStringOperator,
             )
         );
