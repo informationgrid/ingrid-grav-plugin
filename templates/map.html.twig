@@ -7,8 +7,13 @@
         var buffer = 0; //scroll bar buffer
         var iframe = document.getElementById('iframe_map');
         var urlParams = location.search;
+        var mapUrl = '{{ map.url }}';
+        if (mapUrl.indexOf('http') === -1) {
+            mapUrl = location.origin + mapUrl;
+        }
+        mapUrl += urlParams;
 {% if map.is_masterportal %}
-        var url = new URL('{{ map.url }}' + urlParams);
+        var url = new URL(mapUrl);
         var maps = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'maps');
         var preset = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'preset');
         var layers = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'layers' && elem[1].startsWith('['));
@@ -47,7 +52,7 @@
         // Add iFrame 'src'
         iframe.src = url.href;
 {% else %}
-        var url = '{{ map.url }}' + urlParams;
+        var url = mapUrl;
         var editParams = '';
         var editParamsE = '';
         var editParamsN = '';
