@@ -28,7 +28,7 @@
             url.searchParams.set('preset', layersLegacy[1]);
         }
 
-        if (!layers && bgLayer) {
+        if (!layers && bgLayer && bgLayer !== 'voidLayer') {
             url.searchParams.delete(bgLayer[0]);
             url.searchParams.set('LAYERS', JSON.stringify([{'id': bgLayer[1], 'visibility': true}]));
         }
@@ -39,7 +39,7 @@
                 url.searchParams.delete(zoom[0]);
                 var zoomValue = zoom[1];
                 if (zoomValue >= 3) zoomValue = zoomValue -3;
-                    else zoomValue = 0;
+                else zoomValue = 0;
                 mapsValue.zoom = zoomValue;
             }
             if(north && east) {
