@@ -22,6 +22,8 @@ class DetailController
     public \stdClass $esHit;
     public array $partners;
     public string $title;
+    public string $indexField;
+    public ?string $response;
 
     public function __construct(Grav $grav, string $api)
     {
@@ -30,6 +32,11 @@ class DetailController
         $this->lang = $grav['language']->getLanguage();
         $this->uuid = $this->grav['uri']->query('docuuid') ?? '';
         $this->type = $this->grav['uri']->query('isAddress') ? 'address' : 'metadata';
+        if ($this->type == 'address') {
+            $this->indexField = 't02_address.adr_id';
+        } else {
+            $this->indexField = 't01_object.obj_id';
+        }
         $this->cswUrl = $this->grav['uri']->query('cswUrl') ?? '';
         $this->theme = $this->grav['config']->get('system.pages.theme');
         $this->timezone = $this->grav['config']->get('system.timezone') ?: 'Europe/Berlin';
@@ -37,13 +44,11 @@ class DetailController
 
     public function getContent(): void
     {
-        $response = null;
         $dataSourceName = null;
         $providers = [];
-        $esHit = null;
 
         if ($this->uuid) {
-            $responseContent = $this->getResponseContent($this->configApi, $this->uuid, $this->type);
+            $responseContent = $this->getResponseContent($this->configApi, $this->uuid, $this->type, $this->indexField);
             if ($responseContent) {
                 $hits = json_decode($responseContent)->hits;
                 if (count($hits) > 0) {
@@ -56,20 +61,26 @@ class DetailController
                         foreach ($tmpProviders as $provider) {
                             $providers[] = CodelistHelper::getCodelistEntryByIdent(['111'], $provider, $this->lang) ?? $provider;
                         }
-                        $response = ElasticsearchHelper::getValue($this->esHit, 'idf');
+                        $this->response = ElasticsearchHelper::getValue($this->esHit, 'idf');
                     }
                 }
             }
         } else if ($this->cswUrl) {
             try {
-                $response = HttpHelper::getHttpContent($this->cswUrl);
+                $this->response = HttpHelper::getHttpContent($this->cswUrl);
             } catch (\Exception $e) {
                 DebugHelper::error('Error loading detail with cswUrl "' . $this->cswUrl . '": ' . $e->getMessage());
             }
+        } else {
+            $event = new Event([
+                'uri' => $this->grav['uri'],
+                'detailController' => $this
+            ]);
+            Grav::instance()->fireEvent('onThemeDetailHitMetadataWithOtherParamsEvent', $event);
         }
 
-        if ($response) {
-            $content = simplexml_load_string($response);
+        if (isset($this->response)) {
+            $content = simplexml_load_string($this->response);
             IdfHelper::registerNamespaces($content);
 
             if ($this->type == "address") {
@@ -101,21 +112,20 @@ class DetailController
     public function createContentZipOutput(): string
     {
         $output = '';
-        $responseContent = $this->getResponseContent($this->configApi, $this->uuid, $this->type);
+        $responseContent = $this->getResponseContent($this->configApi, $this->uuid, $this->type, $this->indexField);
         if ($responseContent) {
             $hits = json_decode($responseContent)->hits;
-            $response = null;
             $plugId = null;
             $title = null;
             if (count($hits) > 0) {
                 $this->esHit = $hits[0];
-                $response = ElasticsearchHelper::getValue($this->esHit, 'idf');
+                $this->response = ElasticsearchHelper::getValue($this->esHit, 'idf');
                 $plugId = ElasticsearchHelper::getValue($this->esHit, 'iPlugId');
                 $title = ElasticsearchHelper::getValue($this->esHit,'title');
             }
-            if (!empty($response)) {
+            if (!empty($this->response)) {
                 $parser = new DetailCreateZipUVPServiceImpl('downloads/zip', $title, $this->uuid, $plugId, $this->grav);
-                $content = simplexml_load_string($response);
+                $content = simplexml_load_string($this->response);
                 IdfHelper::registerNamespaces($content);
                 [$fileUrl, $fileSize] = $parser->parse($content);
                 $twig = $this->grav['twig'];
@@ -155,12 +165,12 @@ class DetailController
         }
     }
 
-    private function getResponseContent(string $api, string $uuid, string $type): ?string
+    public function getResponseContent(string $api, string $uuid, string $type, string $indexField): ?string
     {
         try {
             $client = new Client(['base_uri' => $api]);
             return $client->request('POST', 'portal/search', [
-                'body' => $this->transformQuery($uuid, $type)
+                'body' => $this->transformQuery($uuid, $type, $indexField)
             ])->getBody()->getContents();
         } catch (\Exception $e) {
             DebugHelper::error('Error loading detail with uuid "' . $uuid . '": ' . $e->getMessage());
@@ -168,7 +178,7 @@ class DetailController
         return null;
     }
 
-    private function transformQuery(string $uuid, string $type): string
+    private function transformQuery(string $uuid, string $type, string $indexField): string
     {
         $theme = $this->grav['config']->get('system.pages.theme');
         $searchSettings = $this->grav['config']->get('themes.' . $theme . '.hit_detail');
@@ -177,10 +187,8 @@ class DetailController
         $sourceExclude = $searchSettings['source']['exclude'] ?? [];
         $requestedFields = $searchSettings['requested_fields'] ?? [];
 
-        $indexField = 't01_object.obj_id';
         $datatype = '-datatype:address';
         if ($type == 'address') {
-            $indexField = 't02_address.adr_id';
             $datatype = 'datatype:address';
         }
         $queryString = array("query_string" => array (
