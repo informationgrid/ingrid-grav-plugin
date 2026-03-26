@@ -226,13 +226,15 @@ class SearchHitParserOpendata
             $languages = $item->languages ?? [];
             $availability = $item->availability ?? '';
             $license = false;
-            $tmpLicense = $item->license;
-            if($tmpLicense) {
-                $license = new SearchHitOpendataDistributionLicense(
-                    $tmpLicense->url ?? '',
-                    $tmpLicense->name ?? '',
-                    $tmpLicense->attribution_by_text ?? '',
-                );
+            if (isset($item->license)) {
+                $tmpLicense = $item->license;
+                if ($tmpLicense) {
+                    $license = new SearchHitOpendataDistributionLicense(
+                        $tmpLicense->url ?? '',
+                        $tmpLicense->name ?? '',
+                        $tmpLicense->attribution_by_text ?? '',
+                    );
+                }
             }
             $array[] = new SearchHitOpendataDistribution(
                 $formats,
