@@ -2,11 +2,11 @@
 
 namespace Grav\Plugin;
 
-readonly class SearchHitOpendataMetdata {
+readonly class SearchHitOpendataMetadata {
 
     public function __construct(
-        public string $issued,
-        public string $modified,
+        public ?string $issued,
+        public ?string $modified,
     )
     {
     }

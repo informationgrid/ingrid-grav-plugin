@@ -77,23 +77,25 @@ class SearchHitParserOpendata
 
         $items = ElasticsearchHelper::getValueArray($esHit, 'contacts');
         foreach ($items as $item) {
-            $role = $item->role ?? '';
-            $name = $item->name ?? '';
-            $street = $item->street ?? '';
-            $code = $item->code ?? '';
-            $pocode = $item->pocode ?? '';
-            $pobox = $item->pobox ?? '';
-            $locality = $item->locality ?? '';
-            $country = $item->country ?? '';
-            $administrative_area = $item->administrative_area ?? '';
+            $role = $item->role ?? null;
+            $name = $item->name ?? null;
+            $street = $item->street ?? null;
+            $code = $item->code ?? null;
+            $pocode = $item->pocode ?? null;
+            $pobox = $item->pobox ?? null;
+            $locality = $item->locality ?? null;
+            $country = $item->country ?? null;
+            $administrative_area = $item->administrative_area ?? null;
 
             $communications = [];
-            $tmpCommunications = $item->communications;
-            foreach ($tmpCommunications as $tmpCommunication) {
-                $communications[] = new SearchHitOpendataContactCommunication(
-                    $tmpCommunication->type ?? '',
-                    $tmpCommunication->value ?? '',
-                );
+            $tmpCommunications = $item->communications ?? null;
+            if (isset($tmpCommunications)) {
+                foreach ($tmpCommunications as $tmpCommunication) {
+                    $communications[] = new SearchHitOpendataContactCommunication(
+                        $tmpCommunication->type ?? null,
+                        $tmpCommunication->value ?? null,
+                    );
+                }
             }
             $array[] = new SearchHitOpendataContact(
                 '',
@@ -113,13 +115,13 @@ class SearchHitParserOpendata
         return $array;
     }
 
-    private static function getMetadata(\stdClass $esHit, string $lang): SearchHitOpendataMetdata|false
+    private static function getMetadata(\stdClass $esHit, string $lang): SearchHitOpendataMetadata|false
     {
         $item = ElasticsearchHelper::getValue($esHit, 'metadata');
         if ($item) {
-            $issued = ElasticsearchHelper::getValue($esHit, 'metadata.issued') ?? '';
-            $modified = ElasticsearchHelper::getValue($esHit, 'metadata.modified') ?? '';
-            return new SearchHitOpendataMetdata(
+            $issued = ElasticsearchHelper::getValue($esHit, 'metadata.issued') ?? null;
+            $modified = ElasticsearchHelper::getValue($esHit, 'metadata.modified') ?? null;
+            return new SearchHitOpendataMetadata(
                 $issued,
                 $modified,
             );
@@ -131,9 +133,9 @@ class SearchHitParserOpendata
     {
         $item = ElasticsearchHelper::getValue($esHit, 'temporal');
         if ($item) {
-            $accrual_periodicity = ElasticsearchHelper::getValue($esHit, 'temporal.accrual_periodicity') ?? '';
-            $gte = ElasticsearchHelper::getValue($esHit, 'temporal.gte') ?? '';
-            $lte = ElasticsearchHelper::getValue($esHit, 'temporal.lte') ?? '';
+            $accrual_periodicity = ElasticsearchHelper::getValue($esHit, 'temporal.accrual_periodicity') ?? null;
+            $gte = ElasticsearchHelper::getValue($esHit, 'temporal.gte') ?? null;
+            $lte = ElasticsearchHelper::getValue($esHit, 'temporal.lte') ?? null;
             return new SearchHitOpendataTemporal(
                 $accrual_periodicity,
                 $gte,
@@ -147,7 +149,7 @@ class SearchHitParserOpendata
     {
         $item = ElasticsearchHelper::getValue($esHit, 'dcat');
         if ($item) {
-            $landing_page = ElasticsearchHelper::getValue($esHit, 'dcat.landingPage') ?? '';
+            $landing_page = ElasticsearchHelper::getValue($esHit, 'dcat.landingPage') ?? null;
             if (!empty($landing_page)) {
                 return new SearchHitOpendataDCAT(
                     $landing_page,
@@ -163,7 +165,7 @@ class SearchHitParserOpendata
     {
         $item = ElasticsearchHelper::getValue($esHit, 'spatial');
         if ($item) {
-            $titles = ElasticsearchHelper::getValueArray($esHit, 'spatial.title') ?? [];
+            $titles = ElasticsearchHelper::getValueArray($esHit, 'spatial.title') ?? null;
             $geometries = [];
             $wkts = [];
             $tmpGeometries = ElasticsearchHelper::getValueArray($esHit, 'spatial.geometries');
@@ -193,10 +195,10 @@ class SearchHitParserOpendata
 
         $items = ElasticsearchHelper::getValueArray($esHit, 'keywords');
         foreach ($items as $item) {
-            $term = $item->term ?? '';
-            $id = $item->id ?? '';
-            $source = $item->source ?? '';
-            $key = '';
+            $term = $item->term ?? null;
+            $id = $item->id ?? null;
+            $source = $item->source ?? null;
+            $key = null;
             if (!empty($term) && !empty($source)) {
                 if (!empty($id) && $source === "THEMES") {
                     $key = CodelistHelper::getCodelistEntryData('6400', $id);
@@ -218,21 +220,21 @@ class SearchHitParserOpendata
 
         $items = ElasticsearchHelper::getValueArray($esHit, 'distributions');
         foreach ($items as $item) {
-            $formats = $item->format ?? [];
-            $access_url = $item->access_url ?? '';
-            $modified = $item->modified ?? '';
-            $title = $item->title ?? '';
-            $description = $item->description ?? '';
-            $languages = $item->languages ?? [];
-            $availability = $item->availability ?? '';
+            $formats = $item->format ?? null;
+            $access_url = $item->access_url ?? null;
+            $modified = $item->modified ?? null;
+            $title = $item->title ?? null;
+            $description = $item->description ?? null;
+            $languages = $item->languages ?? null;
+            $availability = $item->availability ?? null;
             $license = false;
             if (isset($item->license)) {
                 $tmpLicense = $item->license;
                 if ($tmpLicense) {
                     $license = new SearchHitOpendataDistributionLicense(
-                        $tmpLicense->url ?? '',
-                        $tmpLicense->name ?? '',
-                        $tmpLicense->attribution_by_text ?? '',
+                        $tmpLicense->url ?? null,
+                        $tmpLicense->name ?? null,
+                        $tmpLicense->attribution_by_text ?? null,
                     );
                 }
             }

@@ -129,7 +129,7 @@ class InGridGravTwigExtension extends GravExtension
         if ($contacts && $sortList) {
             foreach ($sortList as $sort) {
                 foreach ($contacts as $contact) {
-                    $tmpRole = $contact["role"];
+                    $tmpRole = ($contact instanceof SearchHitOpendataContact) ? $contact->role : $contact["role"];
                     if ($tmpRole) {
                         if ($sort == $tmpRole) {
                             $array[] = $contact;
@@ -138,7 +138,7 @@ class InGridGravTwigExtension extends GravExtension
                 }
             }
             foreach ($contacts as $contact) {
-                $tmpRole = $contact["role"];
+                $tmpRole = ($contact instanceof SearchHitOpendataContact) ? $contact->role : $contact["role"];
                 if ($tmpRole) {
                     $pos = in_array($tmpRole, $sortList);
                     if ($pos === false) {
