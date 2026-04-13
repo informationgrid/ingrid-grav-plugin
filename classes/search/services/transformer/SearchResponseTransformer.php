@@ -281,7 +281,7 @@ class SearchResponseTransformer
             case 'uvp-ni':
                 return SearchResultParserClassicUVP::parseHits($esHit, $lang);
             default:
-                if (ElasticsearchHelper::getValue($esHit, 'idf')) {
+                if (ElasticsearchHelper::isCurrentIndexFormat($esHit)) {
                     return SearchResultParserClassicISO::parseHits($esHit, $lang);
                 } else {
                     return SearchHitParserOpendata::parseHits($esHit, $lang);
