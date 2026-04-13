@@ -243,11 +243,9 @@ class SearchResponseTransformer
                     } else if (isset($facet['facets'])) {
                         foreach ($facet['facets'] as $subFacetKey => $subFacet) {
                             $otherActiveFacets = [];
-                            foreach ($facet['facets'] as $subFacetKey => $subFacet) {
-                                if (isset($subFacet['active']) && $subFacet['active']) {
-                                    if ($key !== $subFacetKey) {
-                                        $otherActiveFacets[] = $subFacetKey;
-                                    }
+                            if (isset($subFacet['active']) && $subFacet['active']) {
+                                if ($key !== $subFacetKey) {
+                                    $otherActiveFacets[] = $subFacetKey;
                                 }
                             }
                             if (!empty($otherActiveFacets)) {
@@ -283,10 +281,10 @@ class SearchResponseTransformer
             case 'uvp-ni':
                 return SearchResultParserClassicUVP::parseHits($esHit, $lang);
             default:
-                if (ElasticsearchHelper::getValue($esHit, 'metadata')) {
-                    return SearchHitParserOpendata::parseHits($esHit, $lang);
-                } else {
+                if (ElasticsearchHelper::getValue($esHit, 'idf')) {
                     return SearchResultParserClassicISO::parseHits($esHit, $lang);
+                } else {
+                    return SearchHitParserOpendata::parseHits($esHit, $lang);
                 }
         }
     }
