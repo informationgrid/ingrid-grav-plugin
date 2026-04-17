@@ -22,8 +22,24 @@ class InGridGravTwigExtension extends GravExtension
             new \Twig_SimpleFunction('removeHashLocale', [$this, 'removeHashLocale']),
             new \Twig_SimpleFunction('getMimeByContentType', [$this, 'getMimeByContentType']),
             new \Twig_SimpleFunction('urlDecode', [$this, 'urlDecode']),
-
+            new \Twig_SimpleFunction('hasFacets', [$this, 'hasFacets']),
         ];
+    }
+
+    public function hasFacets(FacetResult $facet): bool
+    {
+        if ($facet->id == 'bbox') {
+            return true;
+        }
+
+        if ($facet->items && count($facet->items) > 0) {
+            foreach ($facet->items as $item) {
+                if ($item->docCount > 0 || $item->displayOnEmpty) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     public function urlDecode(string $text): string

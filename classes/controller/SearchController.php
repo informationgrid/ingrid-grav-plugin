@@ -173,7 +173,7 @@ class SearchController
                             $listLimit = $addFacet['list_limit'] ?? null;
                             $sort = $addFacet['sort'] ?? null;
                             $partners = CodelistHelper::getCodelistPartnerProviders();
-                            $paramValues = array_reverse(explode(',', $queryParams[$facet['id']]));
+                            $paramValues = array_reverse(explode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $queryParams[$facet['id']]));
                             foreach ($paramValues as $value) {
                                 $items = array_filter($partners, function ($partner) use ($value) {
                                     return $partner['ident'] === $value;
