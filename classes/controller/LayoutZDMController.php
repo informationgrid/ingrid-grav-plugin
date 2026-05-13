@@ -43,6 +43,8 @@ class LayoutZDMController
                     . '<link rel="stylesheet" href="' . $portalUrlPath . 'custom.css" type="text/css">';
                 if ($folder == 'measure') {
                     $ingridHead .= '<link rel="stylesheet" href="' . $portalUrlPath . 'measure.css" type="text/css">';
+                } else if ($folder == 'detail') {
+                    $ingridHead .= '<script src="user/themes/ingrid/js/leaflet/leaflet.js"></script>';
                 }
                 $response = str_replace('  </head>', $ingridHead . '  </head>', $response);
                 if ($title) {
