@@ -111,6 +111,8 @@
                             parent.removeClass('is-active');
                             element.removeClass('ic-ic-minus');
                             element.addClass('ic-ic-plus');
+                            element.attr('aria-expanded', 'false');
+
                             if(leafContent.length !== 0) {
                                 leafContent.css('display', '');
                             }
@@ -125,6 +127,7 @@
                             parent.addClass('is-active');
                             element.removeClass('ic-ic-plus');
                             element.addClass('ic-ic-minus');
+                            element.attr('aria-expanded', 'true');
 
                             if(leafContent.length !== 0) {
                                 leafContent.css('display', 'block');
