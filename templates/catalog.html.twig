@@ -163,6 +163,8 @@
                     if(updateParams) {
                         if (parent.hasClass('is-active')) {
                             parent.removeClass('is-active');
+                            element.attr('aria-expanded', 'false');
+
                             if(leafContent.length !== 0) {
                                 leafContent.css('display', '');
                             }
@@ -175,6 +177,8 @@
                             }
                         } else {
                             parent.addClass('is-active');
+                            element.attr('aria-expanded', 'true');
+
                             if(leafContent.length !== 0) {
                                 leafContent.css('display', 'block');
                             }
