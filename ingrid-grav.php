@@ -738,7 +738,7 @@ class InGridGravPlugin extends Plugin
                     $twig->twig_vars['rdf_url'] = $this->config()['rdf']['url'];
                     $twig->twig_vars['display_sort_hits'] = $search->isSortHitsEnable();
                     $twig->twig_vars['FACET_ENTRIES_SEPARATOR'] = ElasticsearchService::$FACET_ENTRIES_SEPARATOR;
-                    if ($search->results) {
+                    if ($search->results->facets) {
                         $found_key = array_search('procedure', array_column($search->results->facets, 'id'));
                         if (isset($found_key)) {
                             $this->grav['twig']->twig_vars['legend'] = json_encode(array($search->results->facets[$found_key]));
