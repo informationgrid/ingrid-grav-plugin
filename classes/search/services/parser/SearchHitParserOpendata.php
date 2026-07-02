@@ -27,7 +27,11 @@ class SearchHitParserOpendata
         $temporal = self::getTemporal($esHit, $lang);
         $partners = ElasticsearchHelper::getValueArray($esHit, 'partner');
         $dataSourceName = ElasticsearchHelper::getValue($esHit, 'dataSourceName');
-        $providers = ElasticsearchHelper::getValueArray($esHit, 'provider');
+        $providers = array_map(function ($provider) use ($lang) {
+            return CodelistHelper::getCodelistEntryByIdent('111', $provider, $lang);
+        },
+            ElasticsearchHelper::getValueArray($esHit, 'provider')
+        );
 
         return new SearchHitOpendata(
             $id,
