@@ -25,6 +25,9 @@ class SearchHitParserOpendata
         $parent_id = ElasticsearchHelper::getValue($esHit, 'parent_id') ?? "";
         $contacts = self::getContacts($esHit, $lang);
         $temporal = self::getTemporal($esHit, $lang);
+        $partners = ElasticsearchHelper::getValueArray($esHit, 'partner');
+        $dataSourceName = ElasticsearchHelper::getValue($esHit, 'dataSourceName');
+        $providers = ElasticsearchHelper::getValueArray($esHit, 'provider');
 
         return new SearchHitOpendata(
             $id,
@@ -43,6 +46,9 @@ class SearchHitParserOpendata
             $parent_id,
             $contacts,
             $temporal,
+            $partners,
+            $dataSourceName,
+            $providers
         );
     }
 

@@ -22,6 +22,9 @@ readonly class SearchHitOpendata
         public ?string $parent_id,
         public ?array $contacts,
         public SearchHitOpendataTemporal|bool $temporal,
+        public ?array $partners,
+        public ?string $dataSourceName,
+        public ?array $providers,
     )
     {
     }
