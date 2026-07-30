@@ -16,21 +16,122 @@
         var url = new URL(mapUrl);
         var maps = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'maps');
         var preset = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'preset');
+        var importLayers = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'importLayers');
         var layers = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'layers' && elem[1].startsWith('['));
         var zoom = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'zoom');
         var east = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'e');
         var north = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'n');
         var layersLegacy = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'layers' && !elem[1].startsWith('['));
+        var layers_extend  = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'layers_extend');
         var bgLayer = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'bglayer');
 
-        if (!preset && layersLegacy) {
-            url.searchParams.delete(layersLegacy[0]);
-            url.searchParams.set('preset', layersLegacy[1]);
+        var bwaStrId = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'bwastrid');
+        var bwaStrKm = Array.from(url.searchParams.entries()).find(elem => elem[0].toLowerCase() === 'bwastrkm');
+
+        var layersLegacyList = layersLegacy ? layersLegacy[1].split(',') : [];
+        var presetLegacy = undefined;
+        var importsLegacy = [];
+        var activeLayers = [];
+        var ebaLocator = undefined;
+        var ebaOperating = undefined;
+
+        var changed = false
+
+        if (layers_extend) {
+            layersLegacyList.push(layers_extend[1]);
+            url.searchParams.delete(layers_extend[0]);
+            changed = true;
         }
 
-        if (!layers && bgLayer && bgLayer !== 'voidLayer') {
-            url.searchParams.delete(bgLayer[0]);
-            url.searchParams.set('LAYERS', JSON.stringify([{'id': bgLayer[1], 'visibility': true}]));
+        for (const layer of layersLegacyList) {
+            if (layer.match(/^[a-f0-9]{32}$/g)) {
+                presetLegacy = layer;
+            }
+            else if (layer.toUpperCase().startsWith('WMS||') || layer.toUpperCase().startsWith('WFS||') || layer.toUpperCase().startsWith('WMTS||')) {
+                var importElements = layer.split('||');
+                var typ = importElements[0];
+                var label = importElements[1];
+                var serviceUrl = importElements[2];
+                var layerName = importElements[3];
+                var serviceVersion = importElements[4];
+
+                var importObject = {
+                    typ,
+                    url: serviceUrl,
+                    title: label
+                };
+
+                if (layerName) {
+                    if (typ.toUpperCase() === 'WFS') {
+                        importObject.featureTypes = layerName;
+                    }
+                    else {
+                        importObject.layers = layerName;
+                    }
+                }
+                if (serviceVersion) {
+                    importObject.version = serviceVersion;
+                }
+
+                importsLegacy.push(importObject);
+            }
+            else if (layer.startsWith('ebaLocator||')) {
+                const ebaLocatorArray = layer.split("||");
+                if (ebaLocatorArray.length === 6) {
+                    ebaLocator = {
+                        track_nr: ebaLocatorArray[1],
+                        start_kilometry: ebaLocatorArray[2],
+                        end_kilometry: ebaLocatorArray[3],
+                        railtype: ebaLocatorArray[4]
+                    }
+                }
+            }
+            else if (layer.startsWith("ebaOperating||")) {
+                const ebaOperatingArray = layer.split("||");
+                if (ebaOperatingArray.length === 5) {
+                    ebaLocator = {
+                        value: ebaOperatingArray[2],
+                        track: {
+                            trackNr: ebaOperatingArray[3],
+                            type: ebaOperatingArray[4]
+                        }
+                    }
+                }
+            }
+            else {
+                activeLayers.push(layer)
+            }
+        }
+
+        if (!preset && presetLegacy) {
+            url.searchParams.delete(layersLegacy[0]);
+            url.searchParams.set('preset', layersLegacy[1]);
+            changed = true;
+        }
+
+        if (!importLayers && importsLegacy.length > 0) {
+            url.searchParams.delete(layersLegacy[0]);
+            url.searchParams.set('importLayers', JSON.stringify(importsLegacy));
+            changed = true;
+        }
+
+        if (!layers) {
+            if (bgLayer) {
+                url.searchParams.delete(bgLayer[0]);
+                changed = true;
+
+                if (bgLayer[1] !== 'voidLayer') {
+                    activeLayers.push(bgLayer[1]);
+                }
+            }
+            if (layersLegacy) {
+                url.searchParams.delete(layersLegacy[0]);
+                changed = true;
+            }
+            if (activeLayers.length > 0) {
+                url.searchParams.set('LAYERS', JSON.stringify(activeLayers.map(layer => [{'id': layer, 'visibility': true}])));
+                changed = true;
+            }
         }
 
         if (!maps && ((north && east) || zoom)) {
@@ -46,9 +147,50 @@
                 url.searchParams.delete(north[0]);
                 url.searchParams.delete(east[0]);
                 mapsValue.center = [east[1], north[1]];
-                url.searchParams.set('MAPS', JSON.stringify(mapsValue));
             }
+            url.searchParams.set('MAPS', JSON.stringify(mapsValue));
+            changed = true;
         }
+
+        if (bwaStrId) {
+            var attributes = {
+                bwastrid: bwaStrId[1]
+            };
+            url.searchParams.delete(bwaStrId[0]);
+
+            if (bwaStrKm) {
+                attributes.fromKilometer = bwaStrKm[1];
+                attributes.toKilometer = bwaStrKm[1];
+
+                url.searchParams.delete(bwaStrKm[0]);
+            }
+
+            if (!maps && !north && !east) {
+                attributes.initZoom = true;
+            }
+
+            url.searchParams.set('MENU', JSON.stringify({secondary: {currentComponent: 'bWaStrLocator', attributes}}));
+            changed = true;
+        }
+        else if (ebaLocator || ebaOperating) {
+            var attributes = {
+                mode: ebaOperating? 'operatingsite': 'track',
+                track: ebaLocator,
+                operatingSite: ebaOperating,
+            };
+
+            if (!maps && !north && !east) {
+                attributes.initZoom = true;
+            }
+
+            url.searchParams.set('MENU', JSON.stringify({secondary: {currentComponent: 'ebaStrLocator', attributes}}));
+            changed = true;
+        }
+
+        if(changed) {
+            location.search = url.search;
+        }
+
         // Add iFrame 'src'
         iframe.src = url.href;
 {% else %}
