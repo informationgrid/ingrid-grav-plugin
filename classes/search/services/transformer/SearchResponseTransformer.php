@@ -241,8 +241,8 @@ class SearchResponseTransformer
                             }
                         }
                     } else if (isset($facet['facets'])) {
+                        $otherActiveFacets = [];
                         foreach ($facet['facets'] as $subFacetKey => $subFacet) {
-                            $otherActiveFacets = [];
                             if (isset($subFacet['active']) && $subFacet['active']) {
                                 if ($key !== $subFacetKey) {
                                     $otherActiveFacets[] = $subFacetKey;
