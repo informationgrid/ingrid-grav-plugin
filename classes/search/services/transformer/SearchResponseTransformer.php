@@ -242,18 +242,21 @@ class SearchResponseTransformer
                         }
                     } else if (isset($facet['facets'])) {
                         $otherActiveFacets = [];
+                        $isActiveKey = false;
                         foreach ($facet['facets'] as $subFacetKey => $subFacet) {
                             if (isset($subFacet['active']) && $subFacet['active']) {
                                 if ($key !== $subFacetKey) {
                                     $otherActiveFacets[] = $subFacetKey;
+                                } else {
+                                    $isActiveKey = true;
                                 }
                             }
                         }
-                        if (!isset($query_params[$facetConfigId])) {
+                        if (!isset($query_params[$facetConfigId]) and !$isActiveKey) {
                             $query_params[$facetConfigId] = $key;
                         }
                         if (!empty($otherActiveFacets)) {
-                            $query_params[$facetConfigId] = $query_params[$facetConfigId] . ElasticsearchService::$FACET_ENTRIES_SEPARATOR . implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $otherActiveFacets);
+                            $query_params[$facetConfigId] = ($query_params[$facetConfigId] ?? '') . ElasticsearchService::$FACET_ENTRIES_SEPARATOR . implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $otherActiveFacets);
                         }
                     }
                     break;
