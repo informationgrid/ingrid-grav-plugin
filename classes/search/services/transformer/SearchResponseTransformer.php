@@ -248,9 +248,12 @@ class SearchResponseTransformer
                                     $otherActiveFacets[] = $subFacetKey;
                                 }
                             }
-                            if (!empty($otherActiveFacets)) {
-                                $query_params[$facetConfigId] = implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $otherActiveFacets);
-                            }
+                        }
+                        if (!isset($query_params[$facetConfigId])) {
+                            $query_params[$facetConfigId] = $key;
+                        }
+                        if (!empty($otherActiveFacets)) {
+                            $query_params[$facetConfigId] = $query_params[$facetConfigId] . ElasticsearchService::$FACET_ENTRIES_SEPARATOR . implode(ElasticsearchService::$FACET_ENTRIES_SEPARATOR, $otherActiveFacets);
                         }
                     }
                     break;
