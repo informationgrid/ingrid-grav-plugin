@@ -163,11 +163,14 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                                                     $contentType = reset($headers['Content-Type']);
                                                     $extensionType = MimeTypeHelper::getMimetypeExtension($contentType);
                                                     if (empty($extensionType)) {
-                                                        $extensionType = '.html';
+                                                        $extensionType = 'html';
                                                     }
                                                     $contentLength = reset($headers['Content-Length']);
                                                     $lastModified = reset($headers['Last-Modified']);
-                                                    $fileName = $label . '.' . $extensionType;
+                                                    $fileName = urldecode(basename($url));
+                                                    if ($extensionType == 'html') {
+                                                        $fileName = $label . '.' . $extensionType;
+                                                    }
                                                     $id = $stepFolder . '/' . $docFolder . '/' . $url . '/' . $fileName;
                                                     $path = $stepFolder . '/' . $docFolder;
                                                     $array[$id] = array(
