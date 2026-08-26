@@ -46,6 +46,7 @@ class DetailController
     {
         $dataSourceName = null;
         $providers = [];
+        $timestamp = null;
 
         if ($this->uuid) {
             $responseContent = $this->getResponseContent($this->configApi, $this->uuid, $this->type, $this->indexField);
@@ -62,6 +63,7 @@ class DetailController
                             $providers[] = CodelistHelper::getCodelistEntryByIdent(['111'], $provider, $this->lang) ?? $provider;
                         }
                         $this->response = ElasticsearchHelper::getValue($this->esHit, 'idf');
+                        $timestamp = ElasticsearchHelper::getValue($this->esHit, 'modified');
                     }
                 }
             }
@@ -90,7 +92,7 @@ class DetailController
                 }
             } else {
                 $parser = new DetailMetadata($this->theme);
-                $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers);
+                $this->hit = $parser->parse($content, $this->uuid, $dataSourceName, $providers, $timestamp);
                 if (isset($this->hit)) {
                     $event = new Event([
                         'hit' => $this->hit,
@@ -117,14 +119,17 @@ class DetailController
             $hits = json_decode($responseContent)->hits;
             $plugId = null;
             $title = null;
+            $timestamp = null;
+
             if (count($hits) > 0) {
                 $this->esHit = $hits[0];
                 $this->response = ElasticsearchHelper::getValue($this->esHit, 'idf');
                 $plugId = ElasticsearchHelper::getValue($this->esHit, 'iPlugId');
                 $title = ElasticsearchHelper::getValue($this->esHit,'title');
+                $timestamp = ElasticsearchHelper::getValue($this->esHit,'modified');
             }
             if (!empty($this->response)) {
-                $parser = new DetailCreateZipUVPServiceImpl('downloads/zip', $title, $this->uuid, $plugId, $this->grav);
+                $parser = new DetailCreateZipUVPServiceImpl('downloads/zip', $title, $this->uuid, $plugId, $this->grav, $timestamp);
                 $content = simplexml_load_string($this->response);
                 IdfHelper::registerNamespaces($content);
                 [$fileUrl, $fileSize] = $parser->parse($content);

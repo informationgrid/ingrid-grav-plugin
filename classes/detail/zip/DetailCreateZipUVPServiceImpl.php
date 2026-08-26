@@ -15,14 +15,16 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
     public string $title;
     public string $uuid;
     public string $plugId;
+    public string $timestamp;
     public Grav $grav;
 
-    public function __construct(string $path, string $title, string $uuid, string $plugId, Grav $grav)
+    public function __construct(string $path, string $title, string $uuid, string $plugId, Grav $grav, ?string $timestamp)
     {
         $this->title = StringHelper::convertFilename($title);
         $this->uuid = $uuid;
         $this->plugId = $plugId;
         $this->grav = $grav;
+        $this->timestamp = $timestamp;
 
         $locator = $grav['locator'];
         $folderPath = $locator->findResource('user-data://', true);
@@ -154,7 +156,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                                         $label = IdfHelper::getNodeValue($link, './label');
 
                                         error_reporting(E_ALL & ~E_WARNING);
-                                        [$status, $headers] = HttpHelper::getHeader($url);
+                                        [$status, $headers] = HttpHelper::getHeaderWithHash($url, md5($this->timestamp));
                                         if ($headers) {
                                             if ($status == 200) {
                                                 if (isset($headers['Content-Type']) &&
