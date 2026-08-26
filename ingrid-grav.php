@@ -525,8 +525,9 @@ class InGridGravPlugin extends Plugin
     public function renderCustomTemplateUrlFileSize(): void
     {
         $paramUrl = $this->grav['uri']->query('url') ?: "";
+        $hash = $this->grav['uri']->query('hash') ?: "";
         try {
-            [$status, $headers] = HttpHelper::getHeader($paramUrl);
+            [$status, $headers] = HttpHelper::getHeaderWithHash($paramUrl, $hash);
             if ($headers) {
                 if ($status == 200) {
                     if (isset($headers['Content-Length'])) {
