@@ -79,20 +79,20 @@
                 const ebaLocatorArray = layer.split("||");
                 if (ebaLocatorArray.length === 6) {
                     ebaLocator = {
-                        track_nr: ebaLocatorArray[1],
-                        start_kilometry: ebaLocatorArray[2],
-                        end_kilometry: ebaLocatorArray[3],
-                        railtype: ebaLocatorArray[4]
+                        track_nr: Number(ebaLocatorArray[1]),
+                        start_kilometry: Number(ebaLocatorArray[2]),
+                        end_kilometry: Number(ebaLocatorArray[3]),
+                        railtype: Number(ebaLocatorArray[4])
                     }
                 }
             }
             else if (layer.startsWith("ebaOperating||")) {
                 const ebaOperatingArray = layer.split("||");
                 if (ebaOperatingArray.length === 5) {
-                    ebaLocator = {
+                    ebaOperating = {
                         value: ebaOperatingArray[2],
                         track: {
-                            trackNr: ebaOperatingArray[3],
+                            trackNr: Number(ebaOperatingArray[3]),
                             type: ebaOperatingArray[4]
                         }
                     }
