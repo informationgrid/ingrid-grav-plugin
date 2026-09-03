@@ -114,7 +114,7 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
         foreach ($itemsUpdateJson as $key => $item) {
             if (isset($itemsJson[$key])) {
                 $result_array = array_diff($item, $itemsJson[$key]);
-                if (empty($result_array[0])) {
+                if (empty($result_array)) {
                     unset($itemsUpdateJson[$key]);
                     unset($itemsJson[$key]);
                 }
