@@ -10,7 +10,7 @@
                     <h4>{{ "SITEMAP.AREA_MAIN"|t|e }}</h4>
                     <div class="link-list">
                         {% for entry in menu_site %}
-                            {% if entry.highlighted is sameas(true) %}
+                            {% if entry.highlighted is same as(true) %}
                                 {% set p = pages.find(entry.path) %}
                                 {% if p and p.visible %}
                                     {% set page_active = (p.active or p.activeChild) ? 'is-selected' : '' %}
@@ -30,7 +30,7 @@
                     <h4>{{ "SITEMAP.AREA_FOOTER"|t|e }}</h4>
                     <div class="link-list">
                         {% for entry in menu_site %}
-                            {% if entry.highlighted is sameas(false) %}
+                            {% if entry.highlighted is same as(false) %}
                                 {% set p = pages.find(entry.path) %}
                                 {% if p and p.visible %}
                                     {% set page_active = (p.active or p.activeChild) ? 'is-selected' : '' %}
