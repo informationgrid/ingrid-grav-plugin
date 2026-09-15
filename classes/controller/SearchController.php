@@ -24,7 +24,7 @@ class SearchController
     public function __construct(Grav $grav, string $api)
     {
         $this->grav = $grav;
-        $this->configApi = $api;
+        $this->configApi = !empty($api) ? rtrim($api, '/') . '/' : '';
         $this->lang = $grav['language']->getLanguage();
         $this->theme = $this->grav['config']->get('system.pages.theme');
         $this->results = null;
@@ -505,7 +505,7 @@ class SearchController
     {
         foreach ($facetConfig as $key => $facet) {
             if (property_exists((object)$facet, 'catalog')) {
-                $configApiUrlCatalog = $this->configApi . '/portal/catalogs';
+                $configApiUrlCatalog = rtrim($this->configApi, '/') . '/portal/catalogs';
                 $catalog = new CatalogController($this->grav, $configApiUrlCatalog);
                 $items = $catalog->getContent();
                 if(!empty($items)) {
@@ -541,7 +541,7 @@ class SearchController
 
     private function addFacetCatalogChild(array &$facetConfig, array $facet, array $childFacet, string $partner, string $ident, bool $singleSelection): void
     {
-        $configApiUrlCatalog = $this->configApi . '/portal/catalogs';
+        $configApiUrlCatalog = rtrim($this->configApi, '/') . '/portal/catalogs';
         $newLabel = $childFacet['name'];
         $newParentId = $facet['id'] ?? $partner . '-' . substr(md5($ident . '-' . $facet['uuid']), 0, 8);
         $newChildId = $childFacet['id'] ?? $partner . '-' . substr(md5($ident . '-' . $childFacet['uuid']), 0, 8);

@@ -23,7 +23,10 @@ class SearchServiceImpl implements SearchService
 
     function __construct(Grav $grav, Uri $uri, array $facetConfig, array $searchSettings)
     {
-        $this->api = $grav['config']->get('plugins.ingrid-grav.ingrid_api.url');
+        $this->api = $grav['config']->get('plugins.ingrid-grav.ingrid_api.url') ?? '';
+        if (!empty($this->api)) {
+            $this->api = rtrim($this->api, '/') . '/';
+        }
         $this->client = new Client(['base_uri' => $this->api]);
         $this->facet_config = $facetConfig;
         $this->addToSearch = $searchSettings['add_to_search'] ?? [];

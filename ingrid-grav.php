@@ -71,8 +71,8 @@ class InGridGravPlugin extends Plugin
         }
 
         $config = $this->config();
-        $this->configApiUrl = $config['ingrid_api']['url'];
-        $this->configApiUrlCatalog = $this->configApiUrl . '/portal/catalogs';
+        $this->configApiUrl = !empty($config['ingrid_api']['url']) ? rtrim($config['ingrid_api']['url'], '/') . '/' : '';
+        $this->configApiUrlCatalog = !empty($this->configApiUrl) ? rtrim($this->configApiUrl, '/') . '/portal/catalogs' : '';
         $this->lang = $this->grav['language']->getLanguage();
 
         if ($this->isAdmin()) {
@@ -720,8 +720,8 @@ class InGridGravPlugin extends Plugin
             $config = $this->config();
             switch ($action) {
                 case 'doAddSimilar':
-                    $this->configApiUrl = $config['sns']['similar_terms']['url'];
-                    $similarTerms = new SimilarTermsController($this->grav, $this->configApiUrl);
+                    $similarTermsApiUrl = $config['sns']['similar_terms']['url'];
+                    $similarTerms = new SimilarTermsController($this->grav, $similarTermsApiUrl);
                     $url = $similarTerms->updateQueryString($uri->post());
                     $this->grav->redirect($uri->route() . $url);
                 default:
