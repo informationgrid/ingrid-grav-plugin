@@ -28,7 +28,7 @@ class DetailController
     public function __construct(Grav $grav, string $api)
     {
         $this->grav = $grav;
-        $this->configApi = $api;
+        $this->configApi = !empty($api) ? rtrim($api, '/') . '/' : '';
         $this->lang = $grav['language']->getLanguage();
         $this->uuid = $this->grav['uri']->query('docuuid') ?? '';
         $this->type = $this->grav['uri']->query('isAddress') ? 'address' : 'metadata';
@@ -173,7 +173,8 @@ class DetailController
     public function getResponseContent(string $api, string $uuid, string $type, string $indexField): ?string
     {
         try {
-            $client = new Client(['base_uri' => $api]);
+            $baseUri = !empty($api) ? rtrim($api, '/') . '/' : '';
+            $client = new Client(['base_uri' => $baseUri]);
             return $client->request('POST', 'portal/search', [
                 'body' => $this->transformQuery($uuid, $type, $indexField)
             ])->getBody()->getContents();
