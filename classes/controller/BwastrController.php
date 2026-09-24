@@ -11,7 +11,6 @@ class BwastrController
     public string $epsg;
     public string $urlInfo;
     public string $urlGeok;
-    public int $limit;
 
     public function __construct(Grav $grav)
     {
@@ -22,7 +21,6 @@ class BwastrController
         $this->epsg = $config['epsg'] ?? 4326;
         $this->urlInfo = $config['info'];
         $this->urlGeok = $config['geok'];
-        $this->limit = $config['get_data_lower'];
     }
 
     public function getContent(): string
@@ -34,7 +32,7 @@ class BwastrController
         $to = $uri->query('bis') ?? "";
         $resp = '{}';
 
-        if (intval($id) and intval($id) < $this->limit) {
+        if (intval($id)) {
             if (empty($from) and empty($to)) {
                 if (($response = HttpHelper::getHttpContent($this->urlInfo . $id)) !== false) {
                     $info = json_decode($response, true);
