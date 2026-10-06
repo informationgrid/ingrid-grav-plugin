@@ -163,7 +163,13 @@ class DetailController
                 header('Content-Type: application/zip');
                 header('Content-Length: ' . filesize($dir . '/' . $filename));
                 header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+                while (ob_get_level() > 0) {
+                    ob_end_clean();
+                }
+
                 readfile($dir . '/' . $filename);
+                exit;
             }
         } catch (\Exception $e) {
             DebugHelper::error($paramUuid . ': ' .$e->getMessage());
