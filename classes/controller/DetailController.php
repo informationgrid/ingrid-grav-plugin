@@ -107,7 +107,9 @@ class DetailController
                 }
             }
         } elseif (isset($this->esHit)) {
-            $this->hit = SearchHitParserOpendata::parseHits($this->esHit, $this->lang);
+            if (ElasticsearchHelper::getValue($this->esHit, 'id')) {
+                $this->hit = SearchHitParserOpendata::parseHits($this->esHit, $this->lang);
+            }
         }
     }
 

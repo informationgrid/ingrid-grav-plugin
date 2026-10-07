@@ -77,15 +77,20 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
                     $filePath = $stats['path'];
                     $zip->deleteName($filePath . '/' . $fileName);
                 }
+                $tmpFiles = [];
                 foreach ($statsItemsAdd as $stats) {
                     $fileName = $stats['name'];
                     $filePath = $stats['path'];
                     $fileUrl = $stats['link'];
-                    if (($response = HttpHelper::getHttpContent($fileUrl)) !== false) {
-                        $zip->addFromString($filePath . '/' . $fileName, $response);
+                    if (($tmpFile = HttpHelper::getHttpFile($fileUrl)) !== false) {
+                        $zip->addFile($tmpFile, $filePath . '/' . $fileName);
+                        $tmpFiles[] = $tmpFile;
                     }
                 }
                 $zip->close();
+                foreach ($tmpFiles as $tmpFile) {
+                    unlink($tmpFile);
+                }
             }
         }
     }
@@ -95,15 +100,20 @@ class DetailCreateZipUVPServiceImpl implements DetailCreateZipService
         if (!empty($statsItems)) {
             $zip = new \ZipArchive();
             if ($zip->open($this->filenameZip, \ZipArchive::CREATE)) {
+                $tmpFiles = [];
                 foreach ($statsItems as $stats) {
                     $fileName = $stats['name'];
                     $filePath = $stats['path'];
                     $fileUrl = $stats['link'];
-                    if (($response = HttpHelper::getHttpFile($fileUrl)) !== false) {
-                        $zip->addFromString($filePath . '/' . $fileName, $response);
+                    if (($tmpFile = HttpHelper::getHttpFile($fileUrl)) !== false) {
+                        $zip->addFile($tmpFile, $filePath . '/' . $fileName);
+                        $tmpFiles[] = $tmpFile;
                     }
                 }
                 $zip->close();
+                foreach ($tmpFiles as $tmpFile) {
+                    unlink($tmpFile);
+                }
             }
         }
     }
