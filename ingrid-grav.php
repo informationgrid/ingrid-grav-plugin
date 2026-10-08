@@ -89,24 +89,51 @@ class InGridGravPlugin extends Plugin
         // Get rest content
         switch ($uri_path) {
             case '/rest/getMimeType':
-                session_write_close();
-                $this->enable([
-                    'onPageInitialized' => ['renderCustomTemplateMimetype', 0],
-                ]);
+                $paramUrl = $this->grav['uri']->query('url') ?: "";
+                $paramSig = $this->grav['uri']->query('signature') ?? "";
+                $paramExpires = $this->grav['uri']->query('expires') ?? "";
+                if ($paramSig) {
+                    $signature = hash_hmac('sha256', "url=" . urlencode($paramUrl) . '|' . $paramExpires, $this->grav['config']->get('security.salt'));
+                    if ($signature == $paramSig) {
+                        if ((int)$paramExpires > time()) {
+                            session_write_close();
+                            $this->enable([
+                                'onPageInitialized' => ['renderCustomTemplateMimetype', 0],
+                            ]);
+                        }
+                    }
+                }
                 break;
             case '/rest/getUrlFileSize':
-                session_write_close();
-                $this->enable([
-                    'onPageInitialized' => ['renderCustomTemplateUrlFileSize', 0],
-                ]);
+                $paramUrl = $this->grav['uri']->query('url') ?: "";
+                $paramSig = $this->grav['uri']->query('signature') ?? "";
+                $paramExpires = $this->grav['uri']->query('expires') ?? "";
+                if ($paramSig) {
+                    $signature = hash_hmac('sha256', "url=" . urlencode($paramUrl) . '|' . $paramExpires, $this->grav['config']->get('security.salt'));
+                    if ($signature == $paramSig) {
+                        if ((int)$paramExpires > time()) {
+                            session_write_close();
+                            $this->enable([
+                                'onPageInitialized' => ['renderCustomTemplateUrlFileSize', 0],
+                            ]);
+                        }
+                    }
+                }
                 break;
             case '/rest/getUrlHttpImage':
-                session_write_close();
-                $this->enable([
-                    'onPageInitialized' => ['renderCustomTemplateUrlHttpImage', 0],
-                ]);
+                $paramUrl = $this->grav['uri']->query('url') ?: "";
+                $paramSig = $this->grav['uri']->query('signature') ?? "";
+                $paramExpires = $this->grav['uri']->query('expires') ?? "";
+                if ($paramSig) {
+                    $signature = hash_hmac('sha256', "url=" . urlencode($paramUrl) . '|' . $paramExpires, $this->grav['config']->get('security.salt'));
+                    if ($signature == $paramSig) {
+                        session_write_close();
+                        $this->enable([
+                            'onPageInitialized' => ['renderCustomTemplateUrlHttpImage', 0],
+                        ]);
+                    }
+                }
                 break;
-
             case '/rest/createDetailZip':
                 // Create zip request
                 session_write_close();
@@ -537,15 +564,15 @@ class InGridGravPlugin extends Plugin
                 }
             }
         } catch (\Exception $e) {
-            DebugHelper::error('Error load file size for '. $paramUrl . ': ' . $e->getMessage());
+            DebugHelper::error('Error load file size for ' . $paramUrl . ': ' . $e->getMessage());
         }
         exit();
     }
 
     public function renderCustomTemplateUrlHttpImage(): void
     {
+        $paramUrl = $this->grav['uri']->query('url') ?? "";
         try {
-            $paramUrl = $this->grav['uri']->query('url') ?: "";
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_COOKIESESSION, false);
             curl_setopt($ch, CURLOPT_URL, $paramUrl);
@@ -575,8 +602,9 @@ class InGridGravPlugin extends Plugin
         $twig = $this->grav['twig'];
         // Use the @theme notation to reference the template in the theme
         $theme_path = $twig->addPath($this->grav['locator']->findResource('theme://templates'));
+        $paramUrl = $this->grav['uri']->query('url') ?? "";
+
         try {
-            $paramUrl = $this->grav['uri']->query('url') ?: "";
             $mimeType = MimeTypeHelper::getUrlMimetype($paramUrl);
             $output = $twig->twig()->render($theme_path . '/_rest/utils/mimetype.html.twig', [
                 'mimeType' => $mimeType
