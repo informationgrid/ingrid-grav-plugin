@@ -150,32 +150,35 @@ class DetailController
     public function getContentZipOutput(): void {
         $paramUuid = $this->grav['uri']->query('uuid');
         $paramPlugId = $this->grav['uri']->query('plugid');
-        try {
-            $locator = $this->grav['locator'];
-            $folderPath = $locator->findResource('user-data://', true);
-            $dir = $folderPath . '/downloads/zip/' . $paramPlugId . '/' . $paramUuid;
-            $dirFiles = scandir($dir);
-            $filename = '';
-            foreach ($dirFiles as $dirFile) {
-                if (str_ends_with($dirFile, '.zip')) {
-                    $filename = $dirFile;
+        if (preg_match('/^[a-zA-Z0-9_-]+$/', $paramUuid) &&
+            preg_match('/^[a-zA-Z0-9_-]+$/', $paramPlugId)) {
+            try {
+                $locator = $this->grav['locator'];
+                $folderPath = $locator->findResource('user-data://', true);
+                $dir = $folderPath . '/downloads/zip/' . $paramPlugId . '/' . $paramUuid;
+                $dirFiles = scandir($dir);
+                $filename = '';
+                foreach ($dirFiles as $dirFile) {
+                    if (str_ends_with($dirFile, '.zip')) {
+                        $filename = $dirFile;
+                    }
                 }
-            }
-            if (file_exists($dir . '/' . $filename)) {
-                header('Content-Type: application/zip');
-                header('Content-Length: ' . filesize($dir . '/' . $filename));
-                header('Content-Disposition: attachment; filename="' . $filename . '"');
+                if (file_exists($dir . '/' . $filename)) {
+                    header('Content-Type: application/zip');
+                    header('Content-Length: ' . filesize($dir . '/' . $filename));
+                    header('Content-Disposition: attachment; filename="' . $filename . '"');
 
-                while (ob_get_level() > 0) {
-                    ob_end_clean();
+                    while (ob_get_level() > 0) {
+                        ob_end_clean();
+                    }
+
+                    readfile($dir . '/' . $filename);
                 }
-
-                readfile($dir . '/' . $filename);
-                exit;
+            } catch (\Exception $e) {
+                DebugHelper::error($paramUuid . ': ' . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            DebugHelper::error($paramUuid . ': ' .$e->getMessage());
         }
+        exit;
     }
 
     public function getResponseContent(string $api, string $uuid, string $type, string $indexField): ?string
