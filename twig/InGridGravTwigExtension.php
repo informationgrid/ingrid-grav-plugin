@@ -23,6 +23,7 @@ class InGridGravTwigExtension extends GravExtension
             new \Twig_SimpleFunction('getMimeByContentType', [$this, 'getMimeByContentType']),
             new \Twig_SimpleFunction('urlDecode', [$this, 'urlDecode']),
             new \Twig_SimpleFunction('hasFacets', [$this, 'hasFacets']),
+            new \Twig_SimpleFunction('signatureUrl', [$this, 'signatureUrl']),
         ];
     }
 
@@ -66,6 +67,17 @@ class InGridGravTwigExtension extends GravExtension
     public function convertUrlInText(string $text): string
     {
         return StringHelper::convertUrlInText($text);
+    }
+
+    public function signatureUrl(string $data, bool $appendParams = true): string
+    {
+        $stamp = time() + 300;
+        $sig = hash_hmac('sha256', $data . '|' . $stamp, $this->grav['config']->get('security.salt'));
+        if ($appendParams) {
+            return $data . '&signature=' . $sig . '&expires=' . $stamp;
+        } else {
+            return $sig;
+        }
     }
 
     public function getValueFromCodelist(string $codelistId, string $codelistValue, string $lang = 'de'): string {
