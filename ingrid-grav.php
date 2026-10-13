@@ -71,7 +71,7 @@ class InGridGravPlugin extends Plugin
         }
 
         $config = $this->config();
-        $this->configApiUrl = $config['ingrid_api']['url'];
+        $this->configApiUrl = $config['ingrid_api']['url'] ?? '';
         $this->configApiUrlCatalog = $this->configApiUrl . '/portal/catalogs';
         $this->lang = $this->grav['language']->getLanguage();
 
