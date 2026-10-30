@@ -13,7 +13,7 @@ class Version_860_1_Contact_Form_Add_Altcha extends AbstractMigration
 
     public function getVersion(): string
     {
-        return get_class($this);
+        return (new \ReflectionClass($this))->getShortName();
     }
 
     public function getDescription(): string

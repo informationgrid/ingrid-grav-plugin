@@ -11,7 +11,7 @@ class Version_860_2_KRZN_Enable_RDF extends AbstractMigration
 
     public function getVersion(): string
     {
-        return get_class($this);
+        return (new \ReflectionClass($this))->getShortName();
     }
 
     public function getDescription(): string
