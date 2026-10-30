@@ -31,7 +31,7 @@ class MigrationState
         $locator = $this->grav['locator'];
 
         // true, true => build an absolute path even if the file does not exist yet
-        $this->path = (string)$locator->findResource('user://config/' . self::CONFIG_FILE . '.yaml', true, true);
+        $this->path = (string)$locator->findResource('user://config/' . self::CONFIG_FILE, true, true);
         $dir = dirname($this->path);
         if (!is_dir($dir)) {
             @mkdir($dir, 0775, true);
