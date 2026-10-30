@@ -24,46 +24,6 @@
     "psr-4": {
       "Grav\\Plugin\\InGridGrav\\": "classes/"
     },
-    "classmap":  ["ingrid-grav.php"],
-    "files": [
-      "classes/controller/BwastrController.php",
-      "classes/controller/CatalogController.php",
-      "classes/controller/CategoryController.php",
-      "classes/controller/DatasourceController.php",
-      "classes/controller/DetailController.php",
-      "classes/controller/HelpController.php",
-      "classes/controller/HitOverviewController.php",
-      "classes/controller/SearchController.php",
-      "classes/controller/ProviderController.php",
-      "classes/controller/SimilarTermsController.php",
-      "classes/controller/LayoutZDMController.php",
-      "classes/detail/DetailAddress.php",
-      "classes/detail/DetailMetadata.php",
-      "classes/detail/zip/DetailCreateZipService.php",
-      "classes/detail/zip/DetailCreateZipUVPServiceImpl.php",
-      "classes/search/model/SearchResult.php",
-      "classes/search/model/SearchResultHit.php",
-      "classes/search/model/opendata/SearchHitOpendata.php",
-      "classes/search/model/opendata/SearchHitOpendataContact.php",
-      "classes/search/model/opendata/SearchHitOpendataContactCommunication.php",
-      "classes/search/model/opendata/SearchHitOpendataDCAT.php",
-      "classes/search/model/opendata/SearchHitOpendataDistribution.php",
-      "classes/search/model/opendata/SearchHitOpendataDistributionLicense.php",
-      "classes/search/model/opendata/SearchHitOpendataKeyword.php",
-      "classes/search/model/opendata/SearchHitOpendataMetadata.php",
-      "classes/search/model/opendata/SearchHitOpendataSpatial.php",
-      "classes/search/model/opendata/SearchHitOpendataSpatialAdministrative.php",
-      "classes/search/model/opendata/SearchHitOpendataTemporal.php",
-      "classes/search/model/FacetResult.php",
-      "classes/search/model/FacetItem.php",
-      "classes/search/model/FacetItemMulti.php",
-      "classes/search/services/SearchService.php",
-      "classes/search/services/SearchServiceImpl.php",
-      "classes/search/services/transformer/SearchResponseTransformer.php",
-      "classes/search/services/parser/SearchResultParserClassicISO.php",
-      "classes/search/services/parser/SearchResultParserClassicUVP.php",
-      "classes/search/services/parser/SearchHitParserOpendata.php"
-    ]
-
+    "classmap": ["classes/"]
   }
 }
