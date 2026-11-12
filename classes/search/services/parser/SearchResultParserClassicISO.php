@@ -93,6 +93,7 @@ class SearchResultParserClassicISO
             $hit->additional_html_1 = self::getPreviews($esHit, "additional_html_1");
             $hit->isInspire = !($isInspire == "N");
             $hit->isOpendata = !($isOpendata == "N");
+            $hit->isIZG = in_array(strtolower('izg-relevant'), array_map('strtolower', $hit->searchterms));
             $hit->hasAccessConstraint = !($hasAccessConstraint == "N");
             $hit->isHVD = ElasticsearchHelper::getValue($esHit, "is_hvd") ?? false;
             $hit->obj_serv_type = $obj_serv_type ? CodelistHelper::getCodelistEntryByIso('5100', $obj_serv_type, $lang) : null;
