@@ -933,4 +933,58 @@ class InGridGravPlugin extends Plugin
             )
         );
     }
+
+    /*
+     * Used in theme on default blueprint:
+     * "data-options@: '\Grav\Plugin\InGridGravPlugin::getAdminDetailSortSearchResultOptions'"
+     */
+    public static function getAdminDetailSortSearchResultOptions(): array
+    {
+        $grav = Grav::instance();
+        return array(
+            array(
+                'text' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.SCORE_ASC'),
+                'value' => 'score_asc'
+            ),
+            array(
+                'text' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.SCORE_DESC'),
+                'value' => 'score_desc'
+            ),
+            array(
+                'text' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.TITLE_ASC'),
+                'value' => 'title_asc'
+            ),
+            array(
+                'text' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.TITLE_DESC'),
+                'value' => 'title_desc'
+            ),
+            array(
+                'text' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.DATE_ASC'),
+                'value' => 'date_asc'
+            ),
+            array(
+                'text' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.DATE_DESC'),
+                'value' => 'date_desc'
+            ),
+        );
+    }
+
+    /*
+     * Used in theme on default blueprint:
+     * "data-options@: '\Grav\Plugin\InGridGravPlugin::getAdminDetailSortSearchResultOptionsSelect'"
+     */
+    public static function getAdminDetailSortSearchResultOptionsSelect(): array
+    {
+        $grav = Grav::instance();
+        return array(
+            'score_asc' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.SCORE_ASC'),
+            'score_desc' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.SCORE_DESC'),
+            'title_asc' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.TITLE_ASC'),
+            'title_desc' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.TITLE_DESC'),
+            'date_asc' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.DATE_ASC'),
+            'date_desc' => $grav['language']->translate('THEME.ADMIN.HIT_SEARCH.SORT.OPTIONS.DATE_DESC')
+        );
+    }
+
+
 }

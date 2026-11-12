@@ -48,16 +48,16 @@ class SearchController
         $this->hitsNum = $searchSettings['hits_num'] ?? 0;
 
         if (empty($query)) {
-            $sortByDate = $searchSettings['sort']['emptyQuerySortByDate'] ?? false;
+            $sortOption = $searchSettings['sort']['emptyQuerySortOption'];
         } else {
-            $sortByDate = $searchSettings['sort']['sortByDate'] ?? false;
+            $sortOption = $searchSettings['sort']['sortOption'];
         }
 
         if (empty($this->ranking)) {
-            if ($sortByDate) {
-                $this->ranking = 'date';
+            if ($sortOption) {
+                $this->ranking = $sortOption;
             } else {
-                $this->ranking = 'score';
+                $this->ranking = '';
             }
         }
 

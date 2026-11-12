@@ -15,7 +15,8 @@ class SearchServiceImpl implements SearchService
     private Client $client;
     private array $facet_config;
     private array $addToSearch;
-    private bool $sortByDate;
+    private string $sortOption;
+    private array $sortOptions;
     private array $queryFields;
     private string $queryStringOperator;
     private array $requestedFields;
@@ -32,22 +33,19 @@ class SearchServiceImpl implements SearchService
         $this->queryStringOperator = $searchSettings['query_string_operator'] ?? 'AND';
         $this->requestedFields = $searchSettings['requested_fields'] ?? [];
         $this->searchSourceSettings = $searchSettings['source'] ?? [];
+        $this->sortOptions = $searchSettings['sort']['options']['queries']?? [];
         $ranking = $uri->query('ranking') ?? '';
         $query = $uri->query('q') ?? '';
         if (empty($query)) {
-            $sortByDate = $searchSettings['sort']['emptyQuerySortByDate'] ?? false;
+            $sortOption = $searchSettings['sort']['emptyQuerySortOption'] ?? false;
         } else {
-            $sortByDate = $searchSettings['sort']['sortByDate'] ?? false;
+            $sortOption = $searchSettings['sort']['sortOption'] ?? false;
         }
 
         if (!empty($ranking)) {
-            if ($ranking === 'date') {
-                $sortByDate = true;
-            } else {
-                $sortByDate = false;
-            }
+             $sortOption = $ranking;
         }
-        $this->sortByDate = $sortByDate;
+        $this->sortOption = $sortOption;
     }
 
 
@@ -147,7 +145,8 @@ class SearchServiceImpl implements SearchService
             $this->hitsNum,
             $selectedFacets,
             $this->addToSearch,
-            $this->sortByDate,
+            $this->sortOption,
+            $this->sortOptions,
             $this->queryFields,
             $this->queryStringOperator,
             $this->requestedFields,
