@@ -32,6 +32,11 @@ class BwastrController
         $to = $uri->query('bis') ?? "";
         $resp = '{}';
 
+        // special BWaStr (e.g. 7000 - Nordsee) are unknown to the BWaStr-Locator
+        if (BwastrHelper::isSpecial($id)) {
+            return $resp;
+        }
+
         if (intval($id)) {
             if (empty($from) and empty($to)) {
                 if (($response = HttpHelper::getHttpContent($this->urlInfo . $id)) !== false) {
