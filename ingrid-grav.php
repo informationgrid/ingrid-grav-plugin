@@ -635,6 +635,7 @@ class InGridGravPlugin extends Plugin
             $this->grav['twig']->twig_vars['openNodesLevel'] = $catalog->configCatalogOpenNodesLevel;
             $this->grav['twig']->twig_vars['displayPartner'] = $catalog->configCatalogDisplayPartner;
             $this->grav['twig']->twig_vars['openOnNewTab'] = $catalog->configCatalogOpenOnNewTab;
+            $this->grav['twig']->twig_vars['showExpandableNodeIcon'] = $catalog->configCatalogShowExpandableNodeIcon;
             $this->grav['twig']->twig_vars['openNodes'] = $catalog->openCatalogNodes;
         }
     }

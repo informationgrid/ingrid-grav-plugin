@@ -14,6 +14,7 @@ class CatalogController
     public bool $configCatalogOpenOnNewTab;
     public bool $configCatalogSortByName;
     public bool $configCatalogAddressFolderClosed;
+    public bool $configCatalogShowExpandableNodeIcon;
     public string $paramCatalogOpenNodes;
     public array $openCatalogNodes;
 
@@ -33,6 +34,7 @@ class CatalogController
         $this->configCatalogSortByName = $catalogSetting['sort_by_name'] ?? true;
         $this->configCatalogAddressFolderClosed = $catalogSetting['address_folder_closed'] ?? true;
         $this->configCatalogAddressFolderHidden = $catalogSetting['address_folder_hidden'] ?? false;
+        $this->configCatalogShowExpandableNodeIcon = $catalogSetting['show_expandable_node_icon'] ?? false;
 
         $this->paramCatalogOpenNodes = $this->grav['uri']->query('openNodes') ?? "";
         $this->openCatalogNodes = [];
@@ -133,6 +135,7 @@ class CatalogController
         $detailPage = $this->grav['pages']->find('/detail');
         return $twig->twig()->render($theme_path . '/partials/catalog/catalog-item.html.twig', [
             'openOnNewTab' => $this->configCatalogOpenOnNewTab,
+            'showExpandableNodeIcon' => $this->configCatalogShowExpandableNodeIcon,
             'items' => $children,
             'detailPage' => $detailPage ? $uri->rootUrl() . $detailPage->route() : '',
             'catalogLeafRest' => 'rest/getCatalogLeaf',
